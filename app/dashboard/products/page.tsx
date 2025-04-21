@@ -5,8 +5,10 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { ApiError } from "@/app/types/global";
 import { toast } from "sonner";
-import DataTable from "./DataTable";
+import DataTable from "./data-table/DataTable";
 import { getProducts, PaginatedProducts } from "@/app/services/products";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
@@ -40,7 +42,14 @@ export default function ProductsPage() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="mx-auto">
+      <div className="flex items-center">
+        <h2 className="font-bold text-lg md:text-2xl">Products</h2>
+        <Button className="ms-auto" asChild>
+          <Link href={"/dashboard/products/create"}>Create Product</Link>
+        </Button>
+      </div>
+
       <DataTable
         data={products?.data}
         pagination={products?.pagination}

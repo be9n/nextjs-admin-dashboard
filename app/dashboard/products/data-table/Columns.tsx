@@ -56,17 +56,25 @@ export function getColumns(
     },
     {
       canBeInvisible: true,
+      id: "price",
+      title: "Price",
+      header: <SortableColumn columnKey="price" title="Price" />,
+      cell: (product: Product) => {
+        const amount = parseFloat(product.price.toString());
+        const formattedPrice = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(amount);
+
+        return formattedPrice;
+      },
+    },
+    {
+      canBeInvisible: true,
       id: "category_name",
       title: "Category Name",
       header: "Category Name",
       cell: (product: Product) => product.category_name,
-    },
-    {
-      canBeInvisible: true,
-      id: "price",
-      title: "Price",
-      header: <SortableColumn columnKey="price" title="Price" />,
-      cell: (product: Product) => product.price,
     },
     {
       canBeInvisible: false,

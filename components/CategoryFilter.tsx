@@ -10,7 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { useQueryState } from "nuqs";
+import { parseAsInteger, useQueryState } from "nuqs";
 import { Skeleton } from "./ui/skeleton";
 import { cn } from "@/lib/utils";
 
@@ -19,18 +19,22 @@ export default function CategoryFilter() {
     CategoryListItem[] | null,
     ApiError
   >({
-    queryKey: ["products"],
-    queryFn: async () => getCategoriesList(),
+    queryKey: ["categories_list"],
+    queryFn: async () =>
+      getCategoriesList({ parentCategories: 0, withChildren: 0 }),
     staleTime: 60 * 1000, // 1 minute stale time
     gcTime: 10 * 60 * 1000, // 10 minutes cache time
   });
   const [categoryId, setCategoryId] = useQueryState("category_id");
+  const [, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+
+  const onSelect = (value: string) => {
+    setCategoryId(value === "all" ? null : value);
+    setPage(1);
+  };
 
   return (
-    <Select
-      defaultValue={categoryId || "all"}
-      onValueChange={(value) => setCategoryId(value === "all" ? null : value)}
-    >
+    <Select defaultValue={categoryId || "all"} onValueChange={onSelect}>
       <SelectTrigger className="w-[180px] cursor-pointer">
         {categoryId && isLoading ? (
           <Skeleton className="w-25 h-4" />
@@ -38,7 +42,7 @@ export default function CategoryFilter() {
           <SelectValue placeholder="Select A Category" />
         )}
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="w-50">
         <SelectItem className="cursor-pointer" key="clear" value="all">
           All Categories
         </SelectItem>
@@ -53,7 +57,7 @@ export default function CategoryFilter() {
             <div className="space-y-1">
               {(categoriesList || []).map((item) => (
                 <SelectItem
-                  className={cn("cursor-pointer", {
+                  className={cn("cursor-pointer w-full", {
                     "bg-gray-100": item.id.toString() === categoryId,
                   })}
                   key={item.id}

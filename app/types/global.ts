@@ -39,3 +39,5 @@ export type SidebarItem = {
   icon?: LucideIcon;
   children?: SidebarItem[];
 };
+
+export type IntBoolean = 0 | 1;

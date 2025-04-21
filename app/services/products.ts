@@ -1,3 +1,4 @@
+import { ProductFormValues } from "../dashboard/products/ProductForm";
 import authAxios from "../lib/authAxios";
 import { Pagination } from "../types/global";
 
@@ -20,6 +21,12 @@ export const getProducts = async (
   const { data: response } = await authAxios.get(`/products?${queryString}`);
 
   return response.data.products;
+};
+
+export const createProduct = async (data: ProductFormValues) => {
+  const { data: response } = await authAxios.post("/products", data);
+
+  return response;
 };
 
 export const deleteProduct = async (productId: number) => {

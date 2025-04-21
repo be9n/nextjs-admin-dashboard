@@ -64,54 +64,57 @@ export default function DataTable({
             !isFetching && "opacity-0"
           )}
         />
-        <Table>
-          <TableHeader>
-            <TableRow className="bg-white">
-              {columns.map((column) =>
-                !column.canBeInvisible || visibleColumns.includes(column.id) ? (
-                  <TableHead key={column.id} className={column.className}>
-                    {column.header}
-                  </TableHead>
-                ) : null
-              )}
-            </TableRow>
-          </TableHeader>
-          <TableBody className="bg-white/70">
-            {isLoading ? (
-              Array.from({ length: 5 }).map((_, index) => (
-                <TableRow key={`skeleton-${index}`}>
-                  {columns.map((column, cellIndex) => (
-                    <TableCell key={`skeleton-cell-${cellIndex}`}>
-                      <Skeleton className="h-6 w-full bg-gray-200" />
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (data || []).length > 0 ? (
-              data?.map((product) => (
-                <TableRow key={product.id}>
-                  {columns.map((column) =>
-                    !column.canBeInvisible ||
-                    visibleColumns.includes(column.id) ? (
-                      <TableCell key={column.id}>
-                        {column.cell ? column.cell(product) : null}
-                      </TableCell>
-                    ) : null
-                  )}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="bg-white">
+                {columns.map((column) =>
+                  !column.canBeInvisible ||
+                  visibleColumns.includes(column.id) ? (
+                    <TableHead key={column.id} className={column.className}>
+                      {column.header}
+                    </TableHead>
+                  ) : null
+                )}
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody className="bg-white/70">
+              {isLoading ? (
+                Array.from({ length: 5 }).map((_, index) => (
+                  <TableRow key={`skeleton-${index}`}>
+                    {columns.map((column, cellIndex) => (
+                      <TableCell key={`skeleton-cell-${cellIndex}`}>
+                        <Skeleton className="h-6 w-full bg-gray-200" />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))
+              ) : (data || []).length > 0 ? (
+                data?.map((product) => (
+                  <TableRow key={product.id}>
+                    {columns.map((column) =>
+                      !column.canBeInvisible ||
+                      visibleColumns.includes(column.id) ? (
+                        <TableCell key={column.id}>
+                          {column.cell ? column.cell(product) : null}
+                        </TableCell>
+                      ) : null
+                    )}
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    No results.
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
       <CustomPagination paginationData={pagination} isLoading={isFetching} />
     </div>
