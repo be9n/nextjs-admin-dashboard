@@ -114,7 +114,6 @@ export default function DataTable({
         </Table>
       </div>
       <CustomPagination paginationData={pagination} isLoading={isFetching} />
-      {/* <DeleteDialog /> */}
     </div>
   );
 }

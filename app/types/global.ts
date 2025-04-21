@@ -1,3 +1,4 @@
+import { LucideIcon } from "lucide-react";
 import { ReactNode } from "react";
 
 export type Pagination = {
@@ -30,4 +31,11 @@ export type ApiError = {
   code: number;
   data?: [];
   errors?: Record<string, string[]>;
+};
+
+export type SidebarItem = {
+  title: string;
+  url?: string;
+  icon?: LucideIcon;
+  children?: SidebarItem[];
 };
