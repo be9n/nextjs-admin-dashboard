@@ -50,21 +50,25 @@ export default function SelectRow({
 
   if (selectAll) {
     return (
-      <Checkbox
-        checked={
-          allRowIds?.every((item) => selectedRowIds.includes(item)) || false
-        }
-        onCheckedChange={() => toggleAll()}
-        className="cursor-pointer"
-      />
+      <div className="flex justify-center items-center">
+        <Checkbox
+          checked={
+            allRowIds?.every((item) => selectedRowIds.includes(item)) || false
+          }
+          onCheckedChange={() => toggleAll()}
+          className="cursor-pointer"
+        />
+      </div>
     );
   }
 
   return (
-    <Checkbox
-      checked={!!rowId && selectedRowIds.includes(rowId)}
-      onCheckedChange={() => rowId && toggleSelected(rowId)}
-      className="cursor-pointer"
-    />
+    <div className="flex justify-center items-center">
+      <Checkbox
+        checked={!!rowId && selectedRowIds.includes(rowId)}
+        onCheckedChange={() => rowId && toggleSelected(rowId)}
+        className="cursor-pointer"
+      />
+    </div>
   );
 }

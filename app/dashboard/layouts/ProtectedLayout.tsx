@@ -23,7 +23,7 @@ export default function ProtectedLayout({
         <AppSidebar />
         <div className="w-full">
           <Header />
-          <main className="mx-auto py-6 px-3 lg:px-4">{children}</main>
+          <main className="mx-auto">{children}</main>
         </div>
       </SidebarProvider>
     </div>

@@ -1,4 +1,4 @@
-import { TableColumn } from "@/app/types/global";
+import { ApiError, TableColumn } from "@/app/types/global";
 import { SortableColumn } from "@/components/SortableColumn";
 import SelectRow from "@/components/SelectRow";
 import {
@@ -14,6 +14,8 @@ import { MoreHorizontal } from "lucide-react";
 import { deleteProduct, Product } from "@/app/services/products";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import DeleteDialog2 from "@/components/DeleteDialog2";
+import { toast } from "sonner";
+import Link from "next/link";
 
 export function getColumns(
   selectedProductIds: number[],
@@ -110,8 +112,10 @@ const ActionsMenu = ({ product }: { product: Product }) => {
           Copy product ID
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
-          View Product
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <Link href={`/dashboard/products/${product.id}/edit`}>
+            Edit Product
+          </Link>
         </DropdownMenuItem>
         <DeleteProductAction product={product} />
       </DropdownMenuContent>
@@ -123,8 +127,12 @@ const DeleteProductAction = ({ product }: { product: Product }) => {
   const queryClient = useQueryClient();
   const deleteMutation = useMutation({
     mutationFn: deleteProduct,
-    onSuccess: () => {
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast.success(res.message || "Deleted successfully");
+    },
+    onError: (error: ApiError) => {
+      toast.error(error.message || "Something went wrong while deleting");
     },
   });
 

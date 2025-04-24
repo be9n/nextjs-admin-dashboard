@@ -3,10 +3,12 @@
 import React, { useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
-import DataTable from "./DataTable";
+import DataTable from "./data-table/DataTable";
 import { getRoles, PaginatedRoles } from "@/app/services/roles";
 import { ApiError } from "@/app/types/global";
-import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 export default function RolesPage() {
   const searchParams = useSearchParams();
@@ -29,17 +31,26 @@ export default function RolesPage() {
   } = useQuery<PaginatedRoles | null, ApiError>({
     queryKey: ["roles", queryParams],
     queryFn: async () => getRoles(queryParams),
-    staleTime: 60 * 1000, // 1 minute stale time
-    gcTime: 10 * 60 * 1000, // 10 minutes cache time
+    staleTime: 0,
+    gcTime: 0,
     placeholderData: keepPreviousData,
   });
 
-  if (isError) {
-    toast.error(error.message);
-  }
+  useErrorNotification({
+    isError,
+    title: "Something went wrong",
+    description: error?.message || "",
+  });
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-8 px-3 lg:px-4">
+      <div className="flex items-center">
+        <h2 className="font-bold text-lg md:text-2xl">Roles</h2>
+        <Button className="ms-auto" asChild>
+          <Link href={"/dashboard/roles/create"}>Create Role</Link>
+        </Button>
+      </div>
+
       <DataTable
         data={roles?.data}
         pagination={roles?.pagination}

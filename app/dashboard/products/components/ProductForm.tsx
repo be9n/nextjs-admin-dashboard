@@ -3,7 +3,6 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -13,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -24,42 +22,77 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { CategoryListItem, getCategoriesList } from "@/app/services/categories";
 import { cn } from "@/lib/utils";
-import { ApiError } from "@/app/types/global";
+import { ApiError, SuccessApiResponse } from "@/app/types/global";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { createProduct } from "@/app/services/products";
+import {
+  createProduct,
+  EditProduct,
+  updateProduct,
+} from "@/app/services/products";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import ProductFormSkeleton from "./ProductFormSkeleton";
+import { setFormValidationErrors } from "@/lib/form-utils";
+import FormButtons from "@/components/FormButtons";
 
 const formSchema = z.object({
   name: z.string().min(1, { message: "The name is required" }),
   price: z.number().min(0, { message: "Must be equal or greater than 1" }),
-  category_id: z.number().min(1, { message: "req" }),
+  category_id: z.number().min(1, { message: "Category is required" }),
 });
 
 export type ProductFormValues = z.infer<typeof formSchema>;
 
-export default function ProductForm() {
+type ProductFormProps = {
+  product?: EditProduct | null;
+  isLoading?: boolean;
+};
+
+export default function ProductForm({ product, isLoading }: ProductFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      price: 0,
-      category_id: 0,
+    // defaultValues: {
+    //   name: "",
+    //   price: 0,
+    //   category_id: 0,
+    // },
+    values: {
+      name: product?.name ?? "",
+      price: product?.price ?? 0,
+      category_id: product?.category_id ?? 0,
     },
+    mode: "onChange",
   });
+
+  const {
+    formState: { isSubmitting },
+  } = form;
 
   const createProductMutation = useMutation({
     mutationFn: createProduct,
   });
 
-  const onSubmit = (values: ProductFormValues) => {
-    toast.promise(createProductMutation.mutateAsync(values), {
-      loading: "Creating product...",
-      success: (res) => {
-        queryClient.invalidateQueries({ queryKey: ["products"] });
+  const updateProductMutation = useMutation({
+    mutationFn: updateProduct,
+    onError: (error) => console.log(error),
+  });
+
+  const onSubmit = async (data: ProductFormValues) => {
+    const mutationPromise = product
+      ? updateProductMutation.mutateAsync({ data, productId: product.id })
+      : createProductMutation.mutateAsync({ data });
+
+    toast.promise(mutationPromise, {
+      loading: product
+        ? `Updating product: ${product.name}`
+        : "Creating product...",
+      success: (res: SuccessApiResponse) => {
+        queryClient.invalidateQueries({
+          queryKey: ["products", `product_${product?.id}`],
+        });
 
         router.push("/dashboard/products");
 
@@ -68,72 +101,88 @@ export default function ProductForm() {
         };
       },
       error: (error: ApiError) => {
-        return error.message || "An error occurred while creating the product";
+        setFormValidationErrors(form, error);
+
+        return {
+          message: "Something went wrong!",
+          description:
+            error.message || "An error occurred while creating the product",
+        };
       },
     });
+
+    try {
+      await mutationPromise;
+    } catch {}
   };
 
   return (
-    <div className="mx-auto p-4 rounded-lg bg-white xl:w-220">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <div className=" grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Product Name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                  <FormDescription>
-                    This is the product&apos;s display name
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="price"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Price</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      value={field.value ?? 0}
-                      placeholder="35$"
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        field.onChange(value == "" ? 0 : +value);
-                      }}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                  <FormDescription>
-                    This is the product&apos;s price
-                  </FormDescription>
-                </FormItem>
-              )}
-            />
+    <div className="mx-auto p-4 rounded-lg bg-white">
+      {isLoading ? (
+        <ProductFormSkeleton />
+      ) : (
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Product Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Price</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        value={field.value ?? 0}
+                        placeholder="35$"
+                        onChange={(e) => {
+                          const value = e.target.value;
 
-            <CategorySelect form={form} />
-          </div>
-          <Button type="submit" className="cursor-pointer">
-            Submit
-          </Button>
-        </form>
-      </Form>
+                          field.onChange(value == "" ? 0 : +value);
+                        }}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <CategorySelect
+                form={form}
+                parent_category_id={product?.parent_category_id}
+              />
+            </div>
+
+            <FormButtons
+              isSubmitting={isSubmitting}
+              onCancel={() => router.back()}
+            />
+          </form>
+        </Form>
+      )}
     </div>
   );
 }
 
 const CategorySelect = ({
   form,
+  parent_category_id,
 }: {
   form: UseFormReturn<ProductFormValues>;
+  parent_category_id?: number;
 }) => {
   const { data: categoriesList, isLoading } = useQuery<
     CategoryListItem[] | null,
@@ -147,14 +196,14 @@ const CategorySelect = ({
   });
   const [selectedParentCategoryId, setSelectedParentCategoryId] = useState<
     number | null
-  >(null);
+  >(parent_category_id || null);
 
   useEffect(() => {
-    form.resetField("category_id");
+    form.setValue("category_id", 0);
   }, [selectedParentCategoryId, form]);
 
   return (
-    <div className="flex gap-4">
+    <div className="flex gap-4 flex-wrap">
       <ParentCategories
         categories={categoriesList || []}
         isLoading={isLoading}
@@ -162,6 +211,7 @@ const CategorySelect = ({
         setSelectedParentCategoryId={setSelectedParentCategoryId}
       />
       <ChildCategories
+        isLoading={isLoading}
         categories={
           categoriesList?.find((cat) => cat.id === selectedParentCategoryId)
             ?.children || []
@@ -179,7 +229,7 @@ const ParentCategories = ({
   selectedParentCategoryId,
   setSelectedParentCategoryId,
 }: {
-  isLoading: boolean;
+  isLoading?: boolean;
   categories: CategoryListItem[];
   selectedParentCategoryId: number | null;
   setSelectedParentCategoryId: (id: number | null) => void;
@@ -188,16 +238,21 @@ const ParentCategories = ({
     <div>
       <FormLabel className="mb-2">Parent Category</FormLabel>
       <Select
+        value={selectedParentCategoryId?.toString() || "none"}
         onValueChange={(value) =>
           setSelectedParentCategoryId(value === "none" ? null : +value)
         }
       >
-        <SelectTrigger className="w-[180px] cursor-pointer">
-          <SelectValue placeholder="Select A Category" />
+        <SelectTrigger className="cursor-pointer max-w-[150px]">
+          {isLoading ? (
+            <Skeleton className="h-4 w-24" />
+          ) : (
+            <SelectValue placeholder="Select Parent Category" />
+          )}
         </SelectTrigger>
-        <SelectContent className="w-50">
+        <SelectContent className="w-55">
           <SelectItem className="cursor-pointer" key="clear" value="none">
-            None
+            Select Parent Category
           </SelectItem>
           {isLoading ? (
             <div className="space-y-2 mt-3">
@@ -207,7 +262,7 @@ const ParentCategories = ({
             </div>
           ) : (
             <>
-              <div className="space-y-1">
+              <div className="space-y-1 mt-1">
                 {(categories || []).map((item) => (
                   <SelectItem
                     className={cn("cursor-pointer w-full", {
@@ -229,10 +284,12 @@ const ParentCategories = ({
 };
 
 const ChildCategories = ({
+  isLoading,
   categories,
   disabled,
   form,
 }: {
+  isLoading?: boolean;
   categories: CategoryListItem[];
   form: UseFormReturn<z.infer<typeof formSchema>>;
   disabled: boolean;
@@ -247,20 +304,24 @@ const ChildCategories = ({
           <Select
             disabled={disabled}
             onValueChange={(value) => {
-              field.onChange(value === "none" ? 0 : Number(value));
+              if (value) field.onChange(value === "none" ? 0 : Number(value));
             }}
             value={field.value === 0 ? "none" : field.value?.toString()}
           >
             <FormControl>
-              <SelectTrigger className="w-[180px] cursor-pointer">
-                <SelectValue placeholder="Select A Category" />
+              <SelectTrigger className="cursor-pointer max-w-[150px]">
+                {isLoading ? (
+                  <Skeleton className="h-4 w-24" />
+                ) : (
+                  <SelectValue placeholder="Select Category" />
+                )}
               </SelectTrigger>
             </FormControl>
             <SelectContent className="w-50">
               <SelectItem className="cursor-pointer" key="clear" value="none">
-                All Categories
+                Select Category
               </SelectItem>
-              <div className="space-y-1">
+              <div className="space-y-1 mt-1">
                 {(categories || []).map((item) => (
                   <SelectItem
                     className={cn("cursor-pointer w-full", {

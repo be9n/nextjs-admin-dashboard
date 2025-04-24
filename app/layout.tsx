@@ -3,7 +3,6 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import Providers from "./providers";
 import { Toaster } from "sonner";
-import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-          <NuqsAdapter>{children}</NuqsAdapter>
+          {children}
           <Toaster richColors />
         </Providers>
       </body>

@@ -32,8 +32,17 @@ const items: SidebarItem[] = [
   },
   {
     title: "Roles",
-    url: "/dashboard/roles",
     icon: LockKeyhole,
+    children: [
+      {
+        title: "View All",
+        url: "/dashboard/roles",
+      },
+      {
+        title: "Create Role",
+        url: "/dashboard/roles/create",
+      },
+    ]
   },
   {
     title: "Products",
@@ -42,12 +51,10 @@ const items: SidebarItem[] = [
       {
         title: "View All",
         url: "/dashboard/products",
-        icon: ShoppingBag,
       },
       {
         title: "Create Product",
         url: "/dashboard/products/create",
-        icon: ShoppingBag,
       },
     ],
   },

@@ -41,3 +41,9 @@ export type SidebarItem = {
 };
 
 export type IntBoolean = 0 | 1;
+
+export type SuccessApiResponse<T = []> = {
+  success: boolean;
+  message: string;
+  data: T;
+};

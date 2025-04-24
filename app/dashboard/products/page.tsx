@@ -4,11 +4,11 @@ import React, { useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { ApiError } from "@/app/types/global";
-import { toast } from "sonner";
 import DataTable from "./data-table/DataTable";
 import { getProducts, PaginatedProducts } from "@/app/services/products";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { useErrorNotification } from "@/hooks/useErrorNotification";
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
@@ -31,18 +31,20 @@ export default function ProductsPage() {
     isError,
   } = useQuery<PaginatedProducts | null, ApiError>({
     queryKey: ["products", queryParams],
-    queryFn: async () => getProducts(queryParams),
-    staleTime: 60 * 1000, // 1 minute stale time
-    gcTime: 10 * 60 * 1000, // 10 minutes cache time
+    queryFn: () => getProducts(queryParams),
+    staleTime: 0,
+    gcTime: 0,
     placeholderData: keepPreviousData,
   });
 
-  if (isError) {
-    toast.error(error.message);
-  }
+  useErrorNotification({
+    isError,
+    title: "Something went wrong",
+    description: error?.message || "",
+  });
 
   return (
-    <div className="mx-auto">
+    <div className="mx-auto relative py-8 px-3 lg:px-4">
       <div className="flex items-center">
         <h2 className="font-bold text-lg md:text-2xl">Products</h2>
         <Button className="ms-auto" asChild>
