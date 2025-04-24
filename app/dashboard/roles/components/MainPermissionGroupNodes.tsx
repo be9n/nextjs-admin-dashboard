@@ -12,11 +12,11 @@ import SubPermissionGroupNodes from "./SubPermissionGroupNodes";
 
 const MainPermissionGroups = ({
   permissionGroups,
-  toggleKeys,
+  toggleNames,
   isChecked,
 }: {
   permissionGroups: PermissionNode[];
-  toggleKeys: (checked: boolean, node?: PermissionNode) => void;
+  toggleNames: (checked: boolean, node?: PermissionNode) => void;
   isChecked: (node: PermissionNode) => boolean;
 }) => {
   return (
@@ -34,17 +34,17 @@ const MainPermissionGroups = ({
               className="cursor-pointer"
               checked={isChecked(permissionGroup)}
               onCheckedChange={(checked) => {
-                toggleKeys(checked as boolean, permissionGroup);
+                toggleNames(checked as boolean, permissionGroup);
               }}
             />
             <AccordionTrigger className="justify-start gap-2 cursor-pointer hover:font-semibold hover:no-underline">
-              <span>{permissionGroup.name}</span>
+              <span>{permissionGroup.title}</span>
             </AccordionTrigger>
           </div>
           <AccordionContent>
             <SubPermissionGroupNodes
               subPermissionGroups={permissionGroup.children || []}
-              toggleKeys={toggleKeys}
+              toggleNames={toggleNames}
               isChecked={isChecked}
             />
           </AccordionContent>

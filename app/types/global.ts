@@ -50,8 +50,8 @@ export type SuccessApiResponse<T = []> = {
 
 export type PermissionNode = {
   id: number;
-  key: string;
   name: string;
+  title: string;
   checked?: boolean;
   children?: PermissionNode[];
 };

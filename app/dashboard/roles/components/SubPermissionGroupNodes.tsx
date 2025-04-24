@@ -1,18 +1,18 @@
-"use client"
+"use client";
 
 import { PermissionNode } from "@/app/types/global";
 import { Checkbox } from "@/components/ui/checkbox";
-import { FormLabel } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
 import PermissionNodes from "./PermissionNodes";
+import { Label } from "@radix-ui/react-label";
 
 const SubPermissionGroupNodes = ({
   subPermissionGroups,
-  toggleKeys,
+  toggleNames,
   isChecked,
 }: {
   subPermissionGroups: PermissionNode[];
-  toggleKeys: (checked: boolean, node?: PermissionNode) => void;
+  toggleNames: (checked: boolean, node?: PermissionNode) => void;
   isChecked: (node: PermissionNode) => boolean;
 }) => {
   return (
@@ -22,20 +22,24 @@ const SubPermissionGroupNodes = ({
           <div className="flex items-center gap-3 flex-wrap">
             <div className="flex items-center gap-2 min-w-[250px]">
               <Checkbox
+                id={`${subPermissionGroup.name}`}
                 className="cursor-pointer"
                 checked={isChecked(subPermissionGroup)}
                 onCheckedChange={(checked) => {
-                  toggleKeys(checked as boolean, subPermissionGroup);
+                  toggleNames(checked as boolean, subPermissionGroup);
                 }}
               />
-              <FormLabel destructiveOnError={false} className="cursor-pointer">
-                {subPermissionGroup.name}
-              </FormLabel>
+              <Label
+                htmlFor={`${subPermissionGroup.name}`}
+                className="cursor-pointer"
+              >
+                {subPermissionGroup.title}
+              </Label>
             </div>
 
             <PermissionNodes
               permissions={subPermissionGroup.children || []}
-              toggleKeys={toggleKeys}
+              toggleNames={toggleNames}
               isChecked={isChecked}
             />
           </div>

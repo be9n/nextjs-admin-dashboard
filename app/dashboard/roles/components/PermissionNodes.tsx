@@ -7,11 +7,11 @@ import React from "react";
 
 const PermissionNodes = ({
   permissions,
-  toggleKeys,
+  toggleNames,
   isChecked,
 }: {
   permissions: PermissionNode[];
-  toggleKeys: (checked: boolean, node?: PermissionNode) => void;
+  toggleNames: (checked: boolean, node?: PermissionNode) => void;
   isChecked: (node: PermissionNode) => boolean;
 }) => {
   return (
@@ -24,12 +24,12 @@ const PermissionNodes = ({
                 className="cursor-pointer"
                 checked={isChecked(permission)}
                 onCheckedChange={(checked: boolean) => {
-                  toggleKeys(checked, permission);
+                  toggleNames(checked, permission);
                 }}
               />
             </FormControl>
             <FormLabel className="text-sm font-normal cursor-pointer">
-              {permission.name}
+              {permission.title}
             </FormLabel>
           </FormItem>
         ))}

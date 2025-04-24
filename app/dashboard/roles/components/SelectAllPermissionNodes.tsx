@@ -5,10 +5,10 @@ import { FormLabel } from "@/components/ui/form";
 import React from "react";
 
 const SelectAllPermissionNodes = ({
-  toggleKeys,
+  toggleNames,
   isChecked,
 }: {
-  toggleKeys: (checked: boolean) => void;
+  toggleNames: (checked: boolean) => void;
   isChecked: () => boolean;
 }) => {
   return (
@@ -16,7 +16,7 @@ const SelectAllPermissionNodes = ({
       <Checkbox
         className="cursor-pointer"
         checked={isChecked()}
-        onCheckedChange={(checked) => toggleKeys(checked as boolean)}
+        onCheckedChange={(checked) => toggleNames(checked as boolean)}
       />
 
       <FormLabel
