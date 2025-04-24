@@ -47,3 +47,11 @@ export type SuccessApiResponse<T = []> = {
   message: string;
   data: T;
 };
+
+export type PermissionNode = {
+  id: number;
+  key: string;
+  name: string;
+  checked?: boolean;
+  children?: PermissionNode[];
+};

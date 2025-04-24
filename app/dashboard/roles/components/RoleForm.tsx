@@ -1,13 +1,7 @@
 "use client";
 
+import { PermissionNode } from "@/app/types/global";
 import FormButtons from "@/components/FormButtons";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { Checkbox } from "@/components/ui/checkbox";
 import {
   Form,
   FormControl,
@@ -18,20 +12,12 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
-import { PermissionNode, PermissionSelector } from "./PermissionSelector";
-
-type Permission = {
-  id: number;
-  key: string;
-  name: string;
-  checked: boolean;
-  children?: Permission[];
-};
+import MainPermissionGroups from "./MainPermissionGroupNodes";
+import SelectAllPermissionNodes from "./SelectAllPermissionNodes";
 
 const permissionGroups: PermissionNode[] = [
   {
@@ -372,7 +358,7 @@ export default function RoleForm() {
     },
   });
   const {
-    formState: { isSubmitting, errors },
+    formState: { isSubmitting },
   } = form;
 
   const onSubmit = (data: RoleFormValues) => {
@@ -400,51 +386,7 @@ export default function RoleForm() {
           </div>
           <Separator className="my-6" />
 
-          <div className="flex items-center justify-between">
-            <h3
-              className={cn("font-bold", {
-                "text-destructive": errors.permission_ids,
-              })}
-            >
-              Permissions
-            </h3>
-            {errors.permission_ids && (
-              <span className="mx-auto text-destructive">
-                {errors.permission_ids.message}
-              </span>
-            )}
-            <SelectAllPermissions form={form} />
-          </div>
-          <MainPermissionGroups form={form} />
-
-          {/* <FormField
-            control={form.control}
-            name="permission_ids"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Permissions</FormLabel>
-                <FormControl>
-                  <div className="border rounded-md p-3 space-y-2">
-                    {permissionGroups.map((group) => (
-                      <PermissionSelector
-                        key={group.key}
-                        node={group}
-                        selected={field.value}
-                        onToggle={(key, keys) => {
-                          const isAlreadySelected = field.value.includes(key);
-                          const updated = isAlreadySelected
-                            ? field.value.filter((k) => !keys.includes(k))
-                            : [...new Set([...field.value, ...keys])];
-                          field.onChange(updated);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
+          <PermissionSelection form={form} />
 
           <FormButtons
             onCancel={() => router.back()}
@@ -456,7 +398,7 @@ export default function RoleForm() {
   );
 }
 
-const SelectAllPermissions = ({
+const PermissionSelection = ({
   form,
 }: {
   form: UseFormReturn<RoleFormValues>;
@@ -465,232 +407,50 @@ const SelectAllPermissions = ({
     <FormField
       control={form.control}
       name="permission_ids"
-      render={({ field }) => (
-        <FormItem className="flex items-center gap-2">
-          <Checkbox
-            className="cursor-pointer"
-            checked={permissionGroups.every((mainPermissionGroup) =>
-              mainPermissionGroup.children?.every((subPermissionGroup) =>
-                subPermissionGroup.children?.every((permission) =>
-                  field.value?.includes(permission.key)
-                )
-              )
-            )}
-            onCheckedChange={(checked) => {
-              const allPermissions =
-                permissionGroups
-                  .map((mainPermissionGroup) =>
-                    mainPermissionGroup.children
-                      ?.map((subPermissionGroup) =>
-                        subPermissionGroup.children?.map(
-                          (permission) => permission.key
-                        )
-                      )
-                      .flat()
-                  )
-                  .flat() || [];
+      render={({ field }) => {
+        const selectedPermissions = field.value;
+        const getAllNodeKeys = (n: PermissionNode): string[] => {
+          return [n.key, ...(n.children?.flatMap(getAllNodeKeys) ?? [])];
+        };
 
-              return checked
-                ? field.onChange([...field.value, ...allPermissions])
-                : field.onChange(
-                    field.value?.filter(
-                      (value) => !allPermissions?.includes(value)
-                    )
-                  );
-            }}
-          />
+        const getAllKeys = () => permissionGroups.flatMap(getAllNodeKeys);
 
-          <FormLabel
-            destructiveOnError={false}
-            className="text-md cursor-pointer text-foreground"
-          >
-            Select All
-          </FormLabel>
-        </FormItem>
-      )}
+        const toggleKeys = (checked: boolean, node?: PermissionNode) => {
+          const keys = node ? getAllNodeKeys(node) : getAllKeys();
+
+          field.onChange(
+            checked
+              ? [...new Set([...selectedPermissions, ...keys])]
+              : selectedPermissions.filter((k) => !keys.includes(k))
+          );
+        };
+
+        const isChecked = (node?: PermissionNode): boolean => {
+          const keys = node ? getAllNodeKeys(node) : getAllKeys();
+
+          return keys.every((key) => selectedPermissions.includes(key));
+        };
+
+        return (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <FormLabel>Permissions</FormLabel>
+              <FormMessage />
+              <SelectAllPermissionNodes
+                toggleKeys={toggleKeys}
+                isChecked={isChecked}
+              />
+            </div>
+            <div className="border rounded-md p-3">
+              <MainPermissionGroups
+                permissionGroups={permissionGroups}
+                toggleKeys={toggleKeys}
+                isChecked={isChecked}
+              />
+            </div>
+          </div>
+        );
+      }}
     />
-  );
-};
-
-const MainPermissionGroups = ({
-  form,
-}: {
-  form: UseFormReturn<RoleFormValues>;
-}) => {
-  return (
-    <Accordion
-      type="multiple"
-      defaultValue={permissionGroups.map((item) => item.id.toString())}
-    >
-      {permissionGroups.map((permissionGroup) => (
-        <FormField
-          key={permissionGroup.id}
-          control={form.control}
-          name="permission_ids"
-          render={({ field }) => (
-            <AccordionItem value={permissionGroup.id.toString()}>
-              <FormItem>
-                <div className="flex items-center gap-2">
-                  <FormControl>
-                    <Checkbox
-                      checked={permissionGroup.children?.every((child) =>
-                        child.children?.every((permission) =>
-                          field.value?.includes(permission.key)
-                        )
-                      )}
-                      onCheckedChange={(checked) => {
-                        const allPermissions =
-                          permissionGroup.children
-                            ?.map((child) => {
-                              return child.children?.map(
-                                (permission) => permission.key
-                              );
-                            })
-                            .flat() || [];
-
-                        return checked
-                          ? field.onChange([...field.value, ...allPermissions])
-                          : field.onChange(
-                              field.value?.filter(
-                                (value) => !allPermissions?.includes(value)
-                              )
-                            );
-                      }}
-                    />
-                  </FormControl>
-                  <AccordionTrigger className="justify-start gap-2 cursor-pointer hover:font-semibold hover:no-underline">
-                    <FormLabel asChild className="text-sm font-normal">
-                      <span>{permissionGroup.name}</span>
-                    </FormLabel>
-                  </AccordionTrigger>
-                </div>
-                <AccordionContent>
-                  <SubPermissionGroups
-                    form={form}
-                    subPermissionGroups={permissionGroup.children || []}
-                  />
-                </AccordionContent>
-              </FormItem>
-            </AccordionItem>
-          )}
-        />
-      ))}
-    </Accordion>
-  );
-};
-
-const SubPermissionGroups = ({
-  subPermissionGroups,
-  form,
-}: {
-  subPermissionGroups: Permission[];
-  form: UseFormReturn<RoleFormValues>;
-}) => {
-  return (
-    <div className="flex flex-col gap-3 ms-3">
-      {subPermissionGroups.map((subPermissionGroup, index) => (
-        <FormField
-          key={subPermissionGroup.id}
-          control={form.control}
-          name="permission_ids"
-          render={({ field }) => (
-            <FormItem>
-              <div>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <div className="flex items-center gap-2 min-w-[250px]">
-                    <FormControl>
-                      <Checkbox
-                        className="cursor-pointer"
-                        checked={subPermissionGroup.children?.every(
-                          (permission) => field.value?.includes(permission.key)
-                        )}
-                        onCheckedChange={(checked) => {
-                          const allPermissionKeys =
-                            subPermissionGroup.children?.map(
-                              (permission) => permission.key
-                            ) || [];
-
-                          return checked
-                            ? field.onChange([
-                                ...field.value,
-                                ...allPermissionKeys,
-                              ])
-                            : field.onChange(
-                                field.value.filter(
-                                  (value) => !allPermissionKeys.includes(value)
-                                )
-                              );
-                        }}
-                      />
-                    </FormControl>
-                    <FormLabel className="cursor-pointer">
-                      {subPermissionGroup.name}
-                    </FormLabel>
-                  </div>
-
-                  <Permissions
-                    form={form}
-                    permissions={subPermissionGroup.children || []}
-                  />
-                </div>
-
-                {index !== subPermissionGroups.length - 1 && (
-                  <Separator className="mt-3" />
-                )}
-              </div>
-            </FormItem>
-          )}
-        />
-      ))}
-    </div>
-  );
-};
-
-const Permissions = ({
-  permissions,
-  form,
-}: {
-  permissions: Permission[];
-  form: UseFormReturn<RoleFormValues>;
-}) => {
-  return (
-    <div>
-      <div className="flex items-center gap-4 flex-wrap ms-4">
-        {permissions.map((permission) => (
-          <FormField
-            key={permission.id}
-            control={form.control}
-            name="permission_ids"
-            render={({ field }) => {
-              return (
-                <FormItem
-                  key={permission.id}
-                  className="flex flex-row items-start space-x-3 space-y-0"
-                >
-                  <FormControl>
-                    <Checkbox
-                      className="cursor-pointer"
-                      checked={field.value?.includes(permission.key)}
-                      onCheckedChange={(checked) => {
-                        return checked
-                          ? field.onChange([...field.value, permission.key])
-                          : field.onChange(
-                              field.value?.filter(
-                                (value) => value !== permission.key
-                              )
-                            );
-                      }}
-                    />
-                  </FormControl>
-                  <FormLabel className="text-sm font-normal cursor-pointer">
-                    {permission.name}
-                  </FormLabel>
-                </FormItem>
-              );
-            }}
-          />
-        ))}
-      </div>
-    </div>
   );
 };
