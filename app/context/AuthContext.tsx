@@ -10,6 +10,7 @@ import Cookies from "js-cookie";
 import { redirect } from "next/navigation";
 import authAxios from "../lib/authAxios";
 import { removeAccessToken, setAccessTokenCookie } from "@/actions/auth";
+import { removePermissions, setPermissions } from "@/actions/permissions";
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
@@ -25,6 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     accessToken: null,
     isAuthenticated: false,
     isLoading: true,
+    permissions: [],
   });
 
   useEffect(() => {
@@ -37,13 +39,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const fetchUser = async () => {
-    const { data } = await authAxios.get("/me");
-    
+    const { data: response } = await authAxios.get("/me");
+    const user = response.data.user;
+    // await removePermissions();
+    await setPermissions(user.permissions);
+
     setAuthState((prev) => ({
       ...prev,
-      user: data.data.user,
+      user: user,
       isAuthenticated: true,
       isLoading: false,
+      permissions: user.permissions,
     }));
   };
 
@@ -52,14 +58,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data } = await authAxios.post(`/login`, credentials);
       const { user, access_token: accessToken } = data.data;
       console.log(data);
-      
+
       await setAccessTokenCookie(accessToken);
+      await setPermissions(user.permissions);
 
       setAuthState({
         user,
         accessToken,
         isAuthenticated: true,
         isLoading: false,
+        permissions: user.permissions,
       });
     } catch (error) {
       throw error;
@@ -78,6 +86,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         accessToken,
         isAuthenticated: true,
         isLoading: false,
+        permissions: [],
       });
     } catch (error) {
       throw error;
@@ -89,6 +98,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await authAxios.get(`/logout`);
 
     await removeAccessToken();
+    await removePermissions();
 
     redirect("/auth/login");
   };

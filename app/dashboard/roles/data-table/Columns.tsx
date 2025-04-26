@@ -12,6 +12,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import { Role } from "@/app/services/roles";
+import Link from "next/link";
 
 export function getColumns(
   selectedRoleIds: number[],
@@ -99,8 +100,8 @@ const ActionsMenu = ({ role }: { role: Role }) => {
           Copy role ID
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
-          View Role
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href={`/dashboard/roles/${role.id}/edit`}>Edit Role</Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" variant="destructive">
           Delete

@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/app/context/AuthContext";
 import { SidebarItem } from "@/app/types/global";
 import {
   Collapsible,
@@ -33,16 +34,20 @@ const items: SidebarItem[] = [
   {
     title: "Roles",
     icon: LockKeyhole,
+    permission: "user_management.roles",
     children: [
       {
         title: "View All",
         url: "/dashboard/roles",
+        activePatterns: ["^/dashboard/roles/[^/]+/edit$"],
+        // permission: "user_management.roles.view_all",
       },
       {
         title: "Create Role",
         url: "/dashboard/roles/create",
+        permission: "user_management.roles.create",
       },
-    ]
+    ],
   },
   {
     title: "Products",
@@ -61,6 +66,8 @@ const items: SidebarItem[] = [
 ];
 
 export default function AppSidebar() {
+  const { permissions } = useAuth();
+
   return (
     <Sidebar collapsible="icon" variant="sidebar" className="shadow-md">
       <SidebarContent>
@@ -82,6 +89,10 @@ export default function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => {
+                if (item.permission && !permissions.includes(item.permission)) {
+                  return null;
+                }
+
                 if (item.children) {
                   return (
                     <CollapsibleSidebarItem
@@ -103,12 +114,26 @@ export default function AppSidebar() {
   );
 }
 
+function isPathActive(pathname: string, item: SidebarItem): boolean {
+  // Check if current path exactly matches item URL
+  if (pathname === item.url) return true;
+
+  // Check if current path matches any active pattern
+  if (item.activePatterns) {
+    return item.activePatterns.some((pattern) =>
+      new RegExp(pattern).test(pathname)
+    );
+  }
+
+  return false;
+}
+
 function NormalSidebarItem({ sidebarItem }: { sidebarItem: SidebarItem }) {
   const pathname = usePathname();
 
   return (
     <SidebarMenuItem key={sidebarItem.title}>
-      <SidebarMenuButton isActive={pathname === sidebarItem.url} asChild>
+      <SidebarMenuButton isActive={isPathActive(pathname, sidebarItem)} asChild>
         <Link href={sidebarItem.url || ""}>
           {sidebarItem.icon && <sidebarItem.icon />}
           <span>{sidebarItem.title}</span>
@@ -120,8 +145,11 @@ function NormalSidebarItem({ sidebarItem }: { sidebarItem: SidebarItem }) {
 
 function CollapsibleSidebarItem({ sidebarItem }: { sidebarItem: SidebarItem }) {
   const pathname = usePathname();
-  const isOpen = sidebarItem.children?.some(
-    (child) => child.url && pathname.startsWith(child.url)
+  const { permissions } = useAuth();
+
+  // Open the group if any child is "active" by our shared rules
+  const isOpen = sidebarItem.children?.some((child) =>
+    isPathActive(pathname, child)
   );
 
   return (
@@ -141,17 +169,23 @@ function CollapsibleSidebarItem({ sidebarItem }: { sidebarItem: SidebarItem }) {
 
         <CollapsibleContent>
           <SidebarMenuSub>
-            {sidebarItem.children?.map((child) => (
-              <SidebarMenuSubItem key={child.title}>
-                <SidebarMenuSubButton
-                  isActive={pathname === child.url}
-                  asChild
-                  className="cursor-pointer"
-                >
-                  <Link href={child.url || ""}>{child.title}</Link>
-                </SidebarMenuSubButton>
-              </SidebarMenuSubItem>
-            ))}
+            {sidebarItem.children?.map((child) => {
+              if (child.permission && !permissions.includes(child.permission)) {
+                return null;
+              }
+
+              return (
+                <SidebarMenuSubItem key={child.title}>
+                  <SidebarMenuSubButton
+                    isActive={isPathActive(pathname, child)}
+                    asChild
+                    className="cursor-pointer"
+                  >
+                    <Link href={child.url || ""}>{child.title}</Link>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              );
+            })}
           </SidebarMenuSub>
         </CollapsibleContent>
       </SidebarMenuItem>

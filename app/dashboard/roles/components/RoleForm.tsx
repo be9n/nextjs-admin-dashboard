@@ -1,6 +1,6 @@
 "use client";
 
-import { PermissionNode } from "@/app/types/global";
+import { ApiError, PermissionNode } from "@/app/types/global";
 import FormButtons from "@/components/FormButtons";
 import {
   Form,
@@ -18,9 +18,13 @@ import { useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import MainPermissionGroups from "./MainPermissionGroupNodes";
 import SelectAllPermissionNodes from "./SelectAllPermissionNodes";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getPermissionsList } from "@/app/services/permissions";
 import { Loader2Icon } from "lucide-react";
+import { createRole, EditRole, updateRole } from "@/app/services/roles";
+import { toast } from "sonner";
+import { setFormValidationErrors } from "@/lib/form-utils";
+import { usePermissionSelection } from "../hooks/usePermissionSelection";
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "The title is required" }),
@@ -34,21 +38,50 @@ const formSchema = z.object({
 
 export type RoleFormValues = z.infer<typeof formSchema>;
 
-export default function RoleForm() {
+export default function RoleForm({ role }: { role?: EditRole }) {
+  const queryClient = useQueryClient();
   const router = useRouter();
   const form = useForm<RoleFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      title: "",
-      permission_names: [],
+      title: role?.title || "",
+      permission_names: role?.permissions_list || [],
     },
   });
+
   const {
     formState: { isSubmitting },
   } = form;
 
-  const onSubmit = (data: RoleFormValues) => {
-    console.log(data);
+  const createMutation = useMutation({
+    mutationFn: createRole,
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: updateRole,
+  });
+
+  const onSubmit = async (data: RoleFormValues) => {
+    const actionPromise = role
+      ? updateMutation.mutateAsync({ data: data, roleId: role.id })
+      : createMutation.mutateAsync({ data: data });
+
+    toast.promise(actionPromise, {
+      loading: role ? "Updating Role..." : "Creating Role...",
+      success: (res) => {
+        queryClient.invalidateQueries({ queryKey: ["roles"] });
+        router.push("/dashboard/roles");
+        return { message: res.message };
+      },
+      error: (error: ApiError) => {
+        setFormValidationErrors(form, error);
+        return { message: "Something went wrong!", description: error.message };
+      },
+    });
+
+    try {
+      await actionPromise;
+    } catch {}
   };
 
   return (
@@ -99,83 +132,63 @@ const PermissionSelection = ({
     <FormField
       control={form.control}
       name="permission_names"
-      render={({ field }) => {
-        const selectedPermissions = field.value;
-        const getAllNodeNames = (n: PermissionNode): string[] => {
-          return [n.name, ...(n.children?.flatMap(getAllNodeNames) ?? [])];
-        };
-
-        const getAllNames = () => permissionGroups?.flatMap(getAllNodeNames);
-
-        const toggleNames = (checked: boolean, node?: PermissionNode) => {
-          const keys = node ? getAllNodeNames(node) : getAllNames();
-
-          let updated = checked
-            ? [...new Set([...selectedPermissions, ...(keys || [])])]
-            : selectedPermissions.filter((k) => !(keys || []).includes(k));
-
-          // Helper: Recursively remove parent key if none of its children are selected
-          const cleanUnselectedParents = (nodes: PermissionNode[]) => {
-            for (const current of nodes) {
-              if (current.children && current.children.length > 0) {
-                const childKeys = getAllNodeNames(current).filter(
-                  (k) => k !== current.name
-                );
-                const isAnyChildSelected = childKeys.some((k) =>
-                  updated.includes(k)
-                );
-
-                if (!isAnyChildSelected) {
-                  // Remove this parent's key
-                  updated = updated.filter((k) => k !== current.name);
-                }
-
-                // Recurse through children
-                cleanUnselectedParents(current.children);
-              }
-            }
-          };
-
-          // Only run cleanup on uncheck
-          if (!checked) {
-            cleanUnselectedParents(permissionGroups || []);
-          }
-
-          field.onChange(updated);
-        };
-
-        const isChecked = (node?: PermissionNode): boolean => {
-          const keys = node ? getAllNodeNames(node) : getAllNames();
-
-          return (keys || []).every((key) => selectedPermissions.includes(key));
-        };
-
-        return (
-          <div>
-            <div className="flex items-center justify-between gap-2 mb-2">
-              <FormLabel>Permissions</FormLabel>
-              <FormMessage className="text-center" />
-              <SelectAllPermissionNodes
-                toggleNames={toggleNames}
-                isChecked={isChecked}
-              />
-            </div>
-            <div className="border rounded-md p-3">
-              {isLoading ? (
-                <span className="w-full my-20 flex items-center justify-center">
-                  <Loader2Icon className="size-10 text-gray-300 animate-spin" />
-                </span>
-              ) : (
-                <MainPermissionGroups
-                  permissionGroups={permissionGroups || []}
-                  toggleNames={toggleNames}
-                  isChecked={isChecked}
-                />
-              )}
-            </div>
-          </div>
-        );
-      }}
+      render={({ field }) => (
+        <PermissionFieldContent
+          field={field}
+          permissionGroups={permissionGroups}
+          isLoading={isLoading}
+        />
+      )}
     />
+  );
+};
+
+// Extracted to a separate component to properly use hooks
+const PermissionFieldContent = ({
+  field,
+  permissionGroups,
+  isLoading,
+}: {
+  field: { value: string[]; onChange: (value: string[]) => void };
+  permissionGroups: PermissionNode[] | null | undefined;
+  isLoading: boolean;
+}) => {
+  const { toggleNames, isChecked } = usePermissionSelection(
+    field.value,
+    permissionGroups || undefined
+  );
+
+  const handleToggle = (checked: boolean, node?: PermissionNode) => {
+    toggleNames(checked, node, field.onChange);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    toggleNames(checked, undefined, field.onChange);
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-2 mb-2">
+        <FormLabel>Permissions</FormLabel>
+        <FormMessage className="text-center" />
+        <SelectAllPermissionNodes
+          toggleNames={handleSelectAll}
+          isChecked={isChecked}
+        />
+      </div>
+      <div className="border rounded-md p-3">
+        {isLoading ? (
+          <span className="w-full my-20 flex items-center justify-center">
+            <Loader2Icon className="size-10 text-gray-300 animate-spin" />
+          </span>
+        ) : (
+          <MainPermissionGroups
+            permissionGroups={permissionGroups || []}
+            toggleNames={handleToggle}
+            isChecked={isChecked}
+          />
+        )}
+      </div>
+    </div>
   );
 };

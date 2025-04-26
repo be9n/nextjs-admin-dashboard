@@ -38,6 +38,8 @@ export type SidebarItem = {
   url?: string;
   icon?: LucideIcon;
   children?: SidebarItem[];
+  activePatterns?: string[];
+  permission?: string;
 };
 
 export type IntBoolean = 0 | 1;

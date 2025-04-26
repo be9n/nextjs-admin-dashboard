@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { ROUTES } from "./config/routes";
+import { AUTH_ROUTES, PROTECTED_ROUTES } from "./config/routes";
 import { getAccessToken, removeAccessToken } from "./actions/auth";
 
 export async function middleware(request: NextRequest) {
   const token = await getAccessToken();
   const currentPath = request.nextUrl.pathname;
 
-  const isAuthPage = ROUTES.AUTH.some((p) => currentPath.startsWith(p));
-  const isProtectedPage = ROUTES.PROTECTED.some((p) =>
+  const isAuthPage = AUTH_ROUTES.some((p) => currentPath.startsWith(p));
+  const isProtectedPage = PROTECTED_ROUTES.some((p) =>
     currentPath.startsWith(p)
   );
 

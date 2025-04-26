@@ -1,4 +1,3 @@
-export const ROUTES = {
-  AUTH: ["/auth/login", "/auth/register"],
-  PROTECTED: ["/dashboard", "/dashboard/profile", "/dashboard/roles"],
-};
+export const AUTH_ROUTES = ["/auth"];
+
+export const PROTECTED_ROUTES = ["/dashboard"];

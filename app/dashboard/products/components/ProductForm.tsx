@@ -76,8 +76,7 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
   });
 
   const updateProductMutation = useMutation({
-    mutationFn: updateProduct,
-    onError: (error) => console.log(error),
+    mutationFn: updateProduct
   });
 
   const onSubmit = async (data: ProductFormValues) => {

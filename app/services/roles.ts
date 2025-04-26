@@ -1,5 +1,8 @@
+import { notFound } from "next/navigation";
+import { RoleFormValues } from "../dashboard/roles/components/RoleForm";
 import authAxios from "../lib/authAxios";
-import { Pagination } from "../types/global";
+import { ApiError, Pagination, SuccessApiResponse } from "../types/global";
+import { serialize } from "object-to-formdata";
 
 export type Role = {
   id: number;
@@ -19,4 +22,49 @@ export const getRoles = async (
   const { data: response } = await authAxios.get(`/roles?${queryString}`);
 
   return response.data.roles;
+};
+
+export type EditRole = {
+  id: number;
+  title: string;
+  permissions_list: string[];
+};
+
+export const getRole = async (roleId: string): Promise<EditRole> => {
+  try {
+    const { data: response } = await authAxios.get(`/roles/${roleId}`);
+    return response.data.role;
+  } catch (error) {
+    const apiError = error as ApiError;
+    if (apiError.code === 404) {
+      notFound();
+    }
+
+    throw error;
+  }
+};
+
+export const createRole = async ({
+  data,
+}: {
+  data: RoleFormValues;
+}): Promise<SuccessApiResponse> => {
+  const formData = serialize(data);
+  const { data: response } = await authAxios.post("roles", formData);
+
+  return response;
+};
+
+export const updateRole = async ({
+  data,
+  roleId,
+}: {
+  data: RoleFormValues;
+  roleId: number;
+}): Promise<SuccessApiResponse> => {
+  const formData = serialize(data);
+  formData.append("_method", "PUT");
+  const { data: response } = await authAxios.post(`roles/${roleId}`, formData);
+
+  return response;
 };

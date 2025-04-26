@@ -10,6 +10,7 @@ export interface AuthState {
   accessToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  permissions: string[];
 }
 
 export interface LoginCredentials {
