@@ -1,7 +1,7 @@
 "use client";
 
-import { CategoryListItem, getCategoriesList } from "@/app/services/categories";
-import { ApiError } from "@/app/types/global";
+import { CategoryListItem, getCategoriesList } from "@/app/[locale]/services/categories";
+import { ApiError } from "@/app/[locale]/types/global"; 
 import { useQuery } from "@tanstack/react-query";
 import {
   Select,

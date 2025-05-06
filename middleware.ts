@@ -1,8 +1,14 @@
+import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { AUTH_ROUTES, PROTECTED_ROUTES } from "./config/routes";
 import { getAccessToken, removeAccessToken } from "./actions/auth";
+import { routing } from './i18n/routing';
 
+// Create the next-intl middleware
+const intlMiddleware = createMiddleware(routing);
+
+// Middleware handler function
 export async function middleware(request: NextRequest) {
   const token = await getAccessToken();
   const currentPath = request.nextUrl.pathname;
@@ -25,23 +31,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/auth/login", request.nextUrl));
   }
 
-  return NextResponse.next();
+  // If no auth redirects occurred, pass to the intl middleware
+  return intlMiddleware(request);
 }
 
 export const config = {
-  // Match all paths except for:
-  // - _next/static (static files)
-  // - _next/image (image optimization files)
-  // - favicon.ico (favicon file)
-  // - public files (public directory)
-  matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - api (API routes)
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     */
-    "/((?!api|_next/static|_next/image|favicon.ico).*)",
-  ],
+  // Match all pathnames except for
+  // - API routes
+  // - Static files and images
+  // - Favicon and other public files
+  matcher: ['/((?!api|trpc|_next|_vercel|.*\\..*).*)',]
 };

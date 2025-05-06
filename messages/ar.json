@@ -1,0 +1,37 @@
+{
+    "HomePage": {
+      "title": "مرحبا بك في الصفحة الرئيسية",
+      "about": "الذهاب إلى صفحة المعلومات"
+    },
+    "RolesPage": {
+      "title": "الأدوار",
+      "createRole": "إنشاء دور جديد",
+      "columns": {
+        "id": "المعرف",
+        "title": "العنوان",
+        "permissionsCount": "عدد الصلاحيات",
+        "actions": "الإجراءات"
+      },
+      "noResults": "لا توجد نتائج."
+    },
+    "ProductsPage": {
+      "title": "المنتجات",
+      "createProduct": "إنشاء منتج جديد",
+      "columns": {
+        "id": "المعرف",
+        "name": "الاسم",
+        "price": "السعر",
+        "categoryName": "اسم الفئة",
+        "actions": "الإجراءات"
+      },
+      "noResults": "لا توجد نتائج.",
+      "menu": {
+        "copyProductId": "نسخ معرف المنتج",
+        "editProduct": "تعديل المنتج",
+        "delete": "حذف"
+      }
+    },
+    "global": {
+      "searchFor": "ابحث عن {entity}"
+    }
+  }

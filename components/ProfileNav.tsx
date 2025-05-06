@@ -8,7 +8,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useAuth } from "../app/context/AuthContext";
+import { useAuth } from "../app/[locale]/context/AuthContext";
 import Link from "next/link";
 
 const accountLinks = [

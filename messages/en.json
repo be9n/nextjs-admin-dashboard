@@ -1,0 +1,37 @@
+{
+  "HomePage": {
+    "title": "Hello world!",
+    "about": "Go to the about page"
+  },
+  "RolesPage": {
+    "title": "Roles",
+    "createRole": "Create Role",
+    "columns": {
+      "id": "ID",
+      "title": "Title",
+      "permissionsCount": "Permissions Count",
+      "actions": "Actions"
+    },
+    "noResults": "No results."
+  },
+  "ProductsPage": {
+    "title": "Products",
+    "createProduct": "Create Product",
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "price": "Price",
+      "categoryName": "Category Name",
+      "actions": "Actions"
+    },
+    "noResults": "No results.",
+    "menu": {
+      "copyProductId": "Copy product ID",
+      "editProduct": "Edit Product",
+      "delete": "Delete"
+    }
+  },
+  "global": {
+    "searchFor": "Search for {entity}"
+  }
+}
