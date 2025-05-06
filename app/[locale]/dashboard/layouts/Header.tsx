@@ -9,7 +9,7 @@ export default function Header() {
         <div className="flex">
           <SidebarTrigger className="cursor-pointer" />
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <LocaleSwapper />
           <ProfileNav />
         </div>

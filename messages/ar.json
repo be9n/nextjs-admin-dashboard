@@ -14,7 +14,7 @@
       },
       "noResults": "لا توجد نتائج."
     },
-    "ProductsPage": {
+    "products": {
       "title": "المنتجات",
       "createProduct": "إنشاء منتج جديد",
       "columns": {
@@ -32,6 +32,14 @@
       }
     },
     "global": {
-      "searchFor": "ابحث عن {entity}"
+      "searchFor": "ابحث عن {entity}",
+      "ar": "العربية",
+      "en": "الانجليزية",
+      "from": {
+        "translatedNameRequired": "الاسم في {locale} مطلوب",
+        "nameRequired": "الاسم مطلوب",
+        "priceRequired": "السعر مطلوب",
+        "categoryRequired": "الفئة مطلوبة"
+      }
     }
   }

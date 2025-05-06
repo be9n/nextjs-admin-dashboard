@@ -41,7 +41,7 @@ export default function DataTable({
   setSelectedProductIds,
   selectedProductIds,
 }: DataTableProps) {
-  const t = useTranslations("ProductsPage");
+  const t = useTranslations("products");
   const tGlobal = useTranslations("global");
   const allProductIds = data?.map((product) => product.id);
   const columns = useColumns(

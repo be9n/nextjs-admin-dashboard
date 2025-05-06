@@ -12,7 +12,7 @@ import { ApiError } from "../../types/global";
 import { getProducts, PaginatedProducts } from "../../services/products";
 
 export default function ProductsPage() {
-  const t = useTranslations("ProductsPage");
+  const t = useTranslations("products");
   const searchParams = useSearchParams();
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);

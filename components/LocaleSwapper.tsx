@@ -1,7 +1,7 @@
 "use client"
 
 import { usePathname, useRouter } from "@/i18n/navigation";
-import { useParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import {
   Select,
   SelectContent,
@@ -14,7 +14,7 @@ import { routing } from "@/i18n/routing";
 export default function LocaleSwapper() {
   const router = useRouter();
   const { locale } = useParams();
-  
+  const searchParams = useSearchParams();
   const pathname = usePathname();
 
   return (
@@ -22,7 +22,10 @@ export default function LocaleSwapper() {
       <Select
         defaultValue={locale as string}
         onValueChange={(value) => {
-          router.replace(pathname, { locale: value });
+          // Preserve search params when switching locales
+          const params = searchParams.toString();
+          const targetPath = params ? `${pathname}?${params}` : pathname;
+          router.replace(targetPath, { locale: value });
         }}
       >
         <SelectTrigger size="sm"  className="cursor-pointer">

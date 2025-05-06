@@ -34,7 +34,7 @@ export default function EditPage({
   return (
     <div className="py-8 px-3 lg:px-4">
       <div className="mb-8">
-        <h1 className="font-bold text-3xl">Edit Product: {product?.name}</h1>
+        <h1 className="font-bold text-3xl">Edit Product: {product?.name.en}</h1>
       </div>
       <ProductForm product={product} isLoading={isLoading} />
     </div>

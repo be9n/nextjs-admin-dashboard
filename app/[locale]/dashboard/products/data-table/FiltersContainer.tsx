@@ -1,3 +1,5 @@
+"use client"
+
 import CategoryFilter from "@/components/CategoryFilter";
 import { Button } from "@/components/ui/button";
 import {
@@ -5,8 +7,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useParams } from "next/navigation";
 
 export default function FiltersContainer() {
+  const { locale } = useParams();
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -16,7 +21,7 @@ export default function FiltersContainer() {
       </PopoverTrigger>
       <PopoverContent
         className="w-full sm:w-[400px]"
-        side={"right"}
+        side={locale === "ar" ? "left" : "right"}
         align="start"
       >
         <div className="gap-4 grid grid-cols-1 sm:grid-cols-2">

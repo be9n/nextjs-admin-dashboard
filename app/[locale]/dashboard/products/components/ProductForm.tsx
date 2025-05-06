@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useForm, UseFormReturn } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Select,
@@ -20,7 +19,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CategoryListItem, getCategoriesList } from "@/app/[locale]/services/categories";
+import {
+  CategoryListItem,
+  getCategoriesList,
+} from "@/app/[locale]/services/categories";
 import { cn } from "@/lib/utils";
 import { ApiError, SuccessApiResponse } from "@/app/[locale]/types/global";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -35,14 +37,12 @@ import { useRouter } from "next/navigation";
 import ProductFormSkeleton from "./ProductFormSkeleton";
 import { setFormValidationErrors } from "@/lib/form-utils";
 import FormButtons from "@/components/FormButtons";
-
-const formSchema = z.object({
-  name: z.string().min(1, { message: "The name is required" }),
-  price: z.number().min(0, { message: "Must be equal or greater than 1" }),
-  category_id: z.number().min(1, { message: "Category is required" }),
-});
-
-export type ProductFormValues = z.infer<typeof formSchema>;
+import {
+  useProductFormSchema,
+  ProductFormValues,
+} from "../schemas/productSchema";
+import { routing } from "@/i18n/routing";
+import { useTranslations } from "next-intl";
 
 type ProductFormProps = {
   product?: EditProduct | null;
@@ -52,15 +52,16 @@ type ProductFormProps = {
 export default function ProductForm({ product, isLoading }: ProductFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const productFormSchema = useProductFormSchema();
+  const tGlobal = useTranslations("global");
+
   const form = useForm<ProductFormValues>({
-    resolver: zodResolver(formSchema),
-    // defaultValues: {
-    //   name: "",
-    //   price: 0,
-    //   category_id: 0,
-    // },
+    resolver: zodResolver(productFormSchema),
     values: {
-      name: product?.name ?? "",
+      name: {
+        en: product?.name.en ?? "",
+        ar: product?.name.ar ?? "",
+      },
       price: product?.price ?? 0,
       category_id: product?.category_id ?? 0,
     },
@@ -76,17 +77,19 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
   });
 
   const updateProductMutation = useMutation({
-    mutationFn: updateProduct
+    mutationFn: updateProduct,
   });
 
   const onSubmit = async (data: ProductFormValues) => {
+    console.log(data);
+
     const mutationPromise = product
       ? updateProductMutation.mutateAsync({ data, productId: product.id })
       : createProductMutation.mutateAsync({ data });
 
     toast.promise(mutationPromise, {
       loading: product
-        ? `Updating product: ${product.name}`
+        ? `Updating product: ${product.name.en}`
         : "Creating product...",
       success: (res: SuccessApiResponse) => {
         queryClient.invalidateQueries({
@@ -123,19 +126,22 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Product Name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {routing.locales.map((locale) => (
+                <FormField
+                  key={locale}
+                  control={form.control}
+                  name={`name.${locale}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name In {tGlobal(locale)}</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Product Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
               <FormField
                 control={form.control}
                 name="price"
@@ -290,7 +296,7 @@ const ChildCategories = ({
 }: {
   isLoading?: boolean;
   categories: CategoryListItem[];
-  form: UseFormReturn<z.infer<typeof formSchema>>;
+  form: UseFormReturn<ProductFormValues>;
   disabled: boolean;
 }) => {
   return (

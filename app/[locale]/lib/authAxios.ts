@@ -2,6 +2,7 @@ import { getAccessToken } from "@/actions/auth";
 import axios from "axios";
 import { redirect } from "next/navigation";
 import { ApiError } from "../types/global";
+import { getCurrentLocale } from "@/actions/locale";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
 
@@ -13,8 +14,10 @@ const authAxios = axios.create({
 authAxios.interceptors.request.use(
   async (config) => {
     const accessToken = await getAccessToken();
+    const locale = await getCurrentLocale();
 
     config.headers.Authorization = `Bearer ${accessToken}`;
+    config.headers.Locale = locale;
 
     return config;
   },

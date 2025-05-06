@@ -21,10 +21,11 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { ChevronRight, Home, LockKeyhole, ShoppingBag } from "lucide-react";
 import Link from "next/link";
-import { useParams, usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 
 const items: SidebarItem[] = [
   {
@@ -57,6 +58,7 @@ const items: SidebarItem[] = [
       {
         title: "View All",
         url: "/dashboard/products",
+        activePatterns: ["^/dashboard/products/[^/]+/edit$"],
       },
       {
         title: "Create Product",

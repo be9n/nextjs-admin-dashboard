@@ -24,7 +24,7 @@ export function useColumns(
   setSelectedProductIds: React.Dispatch<React.SetStateAction<number[]>>,
   allProductIds?: number[]
 ) {
-  const t = useTranslations("ProductsPage.columns");
+  const t = useTranslations("products.columns");
   
   const columns: TableColumn<Product>[] = [
     {
@@ -172,8 +172,8 @@ export function getColumns(
 }
 
 const ActionsMenu = ({ product }: { product: Product }) => {
-  const t = useTranslations("ProductsPage.columns");
-  const menuT = useTranslations("ProductsPage.menu");
+  const t = useTranslations("products.columns");
+  const menuT = useTranslations("products.menu");
   
   return (
     <DropdownMenu>
@@ -207,7 +207,7 @@ const ActionsMenu = ({ product }: { product: Product }) => {
 };
 
 const DeleteProductAction = ({ product }: { product: Product }) => {
-  const menuT = useTranslations("ProductsPage.menu");
+  const menuT = useTranslations("products.menu");
   const queryClient = useQueryClient();
   const deleteMutation = useMutation({
     mutationFn: deleteProduct,
