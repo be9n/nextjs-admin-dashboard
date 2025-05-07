@@ -39,7 +39,8 @@
         "translatedNameRequired": "الاسم في {locale} مطلوب",
         "nameRequired": "الاسم مطلوب",
         "priceRequired": "السعر مطلوب",
-        "categoryRequired": "الفئة مطلوبة"
+        "categoryRequired": "الفئة مطلوبة",
+        "maxDescriptionLength": "يجب أن يكون الوصف أقل من {length} حرف"
       }
     }
   }

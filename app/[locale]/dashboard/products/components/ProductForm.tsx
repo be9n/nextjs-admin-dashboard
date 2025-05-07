@@ -43,6 +43,7 @@ import {
 } from "../schemas/productSchema";
 import { routing } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { Textarea } from "@/components/ui/textarea";
 
 type ProductFormProps = {
   product?: EditProduct | null;
@@ -61,6 +62,10 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
       name: {
         en: product?.name.en ?? "",
         ar: product?.name.ar ?? "",
+      },
+      description: {
+        en: product?.description?.en ?? "",
+        ar: product?.description?.ar ?? "",
       },
       price: product?.price ?? 0,
       category_id: product?.category_id ?? 0,
@@ -136,6 +141,26 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
                       <FormLabel>Name In {tGlobal(locale)}</FormLabel>
                       <FormControl>
                         <Input placeholder="Product Name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              ))}
+              {routing.locales.map((locale) => (
+                <FormField
+                  key={locale}
+                  control={form.control}
+                  name={`description.${locale}`}
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description In {tGlobal(locale)}</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          className="h-20 resize-none"
+                          placeholder="Product Description"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -39,7 +39,8 @@
       "translatedNameRequired": "The name in {locale} is required",
       "nameRequired": "The name is required",
       "priceRequired": "The price is required",
-      "categoryRequired": "The category is required"
+      "categoryRequired": "The category is required",
+      "maxDescriptionLength": "The description must be less than {length} characters"
     }
   }
 }

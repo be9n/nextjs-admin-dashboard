@@ -8,20 +8,30 @@ import { useTranslations } from "next-intl";
 export function useProductFormSchema() {
   const tForm = useTranslations("global.from");
   const tGlobal = useTranslations("global");
-  
+
   // Create a dynamic name schema object first
   const nameFields: Record<string, z.ZodString> = {};
-  
+  const descriptionFields: Record<string, z.ZodString> = {};
+
   // Add validation for each locale
   routing.locales.forEach((locale) => {
     nameFields[locale] = z
       .string()
-      .min(1, { message: tForm("translatedNameRequired", { locale: tGlobal(locale) }) });
+      .min(1, {
+        message: tForm("translatedNameRequired", { locale: tGlobal(locale) }),
+      });
+
+    descriptionFields[locale] = z.string().max(255, {
+      message: tForm("maxDescriptionLength", {
+        length: 255,
+      }),
+    });
   });
 
   // Then create the complete schema
   return z.object({
     name: z.object(nameFields),
+    description: z.object(descriptionFields),
     price: z.number().min(0, { message: tForm("priceRequired") }),
     category_id: z.number().min(1, { message: tForm("categoryRequired") }),
   });
@@ -30,4 +40,6 @@ export function useProductFormSchema() {
 /**
  * Type definition for form values
  */
-export type ProductFormValues = z.infer<ReturnType<typeof useProductFormSchema>>; 
+export type ProductFormValues = z.infer<
+  ReturnType<typeof useProductFormSchema>
+>;

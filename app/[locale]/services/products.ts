@@ -41,6 +41,7 @@ export const getProducts = async (
 export type EditProduct = {
   id: number;
   name: LocalizedString;
+  description?: LocalizedString;
   price: number;
   category_id: number;
   parent_category_id: number;
