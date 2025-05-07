@@ -33,7 +33,7 @@ import {
   updateProduct,
 } from "@/app/[locale]/services/products";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import ProductFormSkeleton from "./ProductFormSkeleton";
 import { setFormValidationErrors } from "@/lib/form-utils";
 import FormButtons from "@/components/FormButtons";
@@ -44,6 +44,7 @@ import {
 import { routing } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type ProductFormProps = {
   product?: EditProduct | null;
@@ -86,8 +87,6 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
   });
 
   const onSubmit = async (data: ProductFormValues) => {
-    console.log(data);
-
     const mutationPromise = product
       ? updateProductMutation.mutateAsync({ data, productId: product.id })
       : createProductMutation.mutateAsync({ data });
@@ -130,43 +129,56 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
       ) : (
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <Tabs defaultValue="en" className="w-full">
+              <TabsList className="mb-2">
+                {routing.locales.map((locale) => (
+                  <TabsTrigger
+                    className="cursor-pointer"
+                    key={locale}
+                    value={locale}
+                  >
+                    {tGlobal(locale)}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+              {routing.locales.map((locale) => (
+                <TabsContent key={locale} value={locale} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 items-start">
+                    <FormField
+                      control={form.control}
+                      name={`name.${locale}`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Product Name" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name={`description.${locale}`}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Description</FormLabel>
+                          <FormControl>
+                            <Textarea
+                              className="h-20 resize-none"
+                              placeholder="Product Description"
+                              {...field}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </TabsContent>
+              ))}
+            </Tabs>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              {routing.locales.map((locale) => (
-                <FormField
-                  key={locale}
-                  control={form.control}
-                  name={`name.${locale}`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Name In {tGlobal(locale)}</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Product Name" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))}
-              {routing.locales.map((locale) => (
-                <FormField
-                  key={locale}
-                  control={form.control}
-                  name={`description.${locale}`}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description In {tGlobal(locale)}</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          className="h-20 resize-none"
-                          placeholder="Product Description"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))}
               <FormField
                 control={form.control}
                 name="price"
@@ -189,7 +201,6 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
                   </FormItem>
                 )}
               />
-
               <CategorySelect
                 form={form}
                 parent_category_id={product?.parent_category_id}
@@ -198,7 +209,7 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
 
             <FormButtons
               isSubmitting={isSubmitting}
-              onCancel={() => router.back()}
+              onCancel={() => redirect("/dashboard/products")}
             />
           </form>
         </Form>
