@@ -34,6 +34,9 @@ export function useProductFormSchema() {
     description: z.object(descriptionFields),
     price: z.number().min(0, { message: tForm("priceRequired") }),
     category_id: z.number().min(1, { message: tForm("categoryRequired") }),
+    images: z.array(z.instanceof(File)).min(1, {
+      message: tGlobal("imagesRequired"),
+    }),
   });
 }
 

@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-import { DirectionProvider } from '@radix-ui/react-direction';
+import { DirectionProvider } from "@radix-ui/react-direction";
 import { useParams } from "next/navigation";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -11,7 +11,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     defaultOptions: {
       queries: {
         staleTime: 60 * 1000, // 1 minute
-        refetchOnWindowFocus: false,
         retry: false,
       },
     },
@@ -19,10 +18,10 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   const dir = locale === "ar" ? "rtl" : "ltr";
   return (
-    <DirectionProvider dir={dir}>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <DirectionProvider dir={dir}>
         <NuqsAdapter>{children}</NuqsAdapter>
-      </QueryClientProvider>
-    </DirectionProvider>
+      </DirectionProvider>
+    </QueryClientProvider>
   );
 }

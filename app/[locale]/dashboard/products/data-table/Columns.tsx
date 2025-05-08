@@ -25,7 +25,7 @@ export function useColumns(
   allProductIds?: number[]
 ) {
   const t = useTranslations("products.columns");
-  
+
   const columns: TableColumn<Product>[] = [
     {
       canBeInvisible: false,
@@ -174,7 +174,7 @@ export function getColumns(
 const ActionsMenu = ({ product }: { product: Product }) => {
   const t = useTranslations("products.columns");
   const menuT = useTranslations("products.menu");
-  
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -212,7 +212,10 @@ const DeleteProductAction = ({ product }: { product: Product }) => {
   const deleteMutation = useMutation({
     mutationFn: deleteProduct,
     onSuccess: (res) => {
-      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({
+        queryKey: ["products"],
+        exact: false,
+      });
       toast.success(res.message || "Deleted successfully");
     },
     onError: (error: ApiError) => {
@@ -220,12 +223,10 @@ const DeleteProductAction = ({ product }: { product: Product }) => {
     },
   });
 
-  const onConfirm = async () => {
-    await deleteMutation.mutateAsync(product.id);
-  };
-
   return (
-    <DeleteDialog2 action={onConfirm} isLoading={deleteMutation.isPending}>
+    <DeleteDialog2
+      action={() => deleteMutation.mutateAsync(product.id)}
+    >
       <DropdownMenuItem
         onSelect={(e) => e.preventDefault()}
         className="cursor-pointer"

@@ -35,6 +35,7 @@
     "searchFor": "Search for {entity}",
     "ar": "Arabic",
     "en": "English",
+    "imagesRequired": "At least one image is required",
     "from": {
       "translatedNameRequired": "The name in {locale} is required",
       "nameRequired": "The name is required",

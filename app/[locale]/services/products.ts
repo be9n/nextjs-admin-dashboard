@@ -1,6 +1,6 @@
 import { serialize } from "object-to-formdata";
 import authAxios from "../lib/authAxios";
-import { Pagination, SuccessApiResponse } from "../types/global";
+import { Image, Pagination, SuccessApiResponse } from "../types/global";
 import { routing } from "@/i18n/routing";
 import { ProductFormValues } from "../dashboard/products/schemas/productSchema";
 
@@ -45,6 +45,7 @@ export type EditProduct = {
   price: number;
   category_id: number;
   parent_category_id: number;
+  images: Image[];
 };
 
 export const getProduct = async (

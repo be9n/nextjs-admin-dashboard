@@ -35,6 +35,7 @@
       "searchFor": "ابحث عن {entity}",
       "ar": "العربية",
       "en": "الانجليزية",
+      "imagesRequired": "يجب أن يكون على الأقل صورة واحدة",
       "from": {
         "translatedNameRequired": "الاسم في {locale} مطلوب",
         "nameRequired": "الاسم مطلوب",

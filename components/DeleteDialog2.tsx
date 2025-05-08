@@ -1,6 +1,5 @@
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -11,41 +10,57 @@ import {
 } from "@/components/ui/alert-dialog";
 import { LoadingTextSwap } from "./LoadingTextSwap";
 import { Button } from "./ui/button";
-import { ReactNode } from "react";
+import { ReactNode, useState, useTransition } from "react";
 
 type DeleteDialog2Props = {
-  action: () => void;
-  isLoading: boolean;
+  action: () => Promise<unknown>;
   children: ReactNode;
+  title?: string;
+  description?: string;
 };
 
 export default function DeleteDialog2({
-  isLoading,
   action,
   children,
+  title,
+  description,
 }: DeleteDialog2Props) {
+  const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const handleAction = async () => {
+    try {
+      // Mark the state update as a transition to avoid blocking UI
+      startTransition(async () => {
+        await action();
+        setOpen(false);
+      });
+    } catch {}
+  };
+
   return (
-    <AlertDialog open={isLoading ? true : undefined}>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogTitle>{title || "Are you absolutely sure?"}</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the role.
+            {description ||
+              "This action cannot be undone. This will permanently delete the record."}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={isLoading} className="cursor-pointer">
+          <AlertDialogCancel disabled={isPending} className="cursor-pointer">
             Cancel
           </AlertDialogCancel>
-          <AlertDialogAction asChild onClick={action} disabled={isLoading}>
-            <Button
-              variant="destructive"
-              className="bg-destructive hover:bg-destructive/80 cursor-pointer text-white"
-            >
-              <LoadingTextSwap isLoading={isLoading}>Delete</LoadingTextSwap>
-            </Button>
-          </AlertDialogAction>
+          <Button
+            variant="destructive"
+            className="bg-destructive hover:bg-destructive/80 cursor-pointer text-white"
+            onClick={handleAction}
+            disabled={isPending}
+          >
+            <LoadingTextSwap isLoading={isPending}>Delete</LoadingTextSwap>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

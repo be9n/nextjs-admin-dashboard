@@ -45,6 +45,8 @@ import { routing } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card } from "@/components/ui/card";
+import ImageUploader from "@/components/ImageUploader";
 
 type ProductFormProps = {
   product?: EditProduct | null;
@@ -70,6 +72,7 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
       },
       price: product?.price ?? 0,
       category_id: product?.category_id ?? 0,
+      images: [],
     },
     mode: "onChange",
   });
@@ -122,13 +125,13 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
     } catch {}
   };
 
-  return (
-    <div className="mx-auto p-4 rounded-lg bg-white">
-      {isLoading ? (
-        <ProductFormSkeleton />
-      ) : (
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+  return isLoading ? (
+    <ProductFormSkeleton />
+  ) : (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:items-start">
+          <Card className="p-4 lg:col-span-2">
             <Tabs defaultValue="en" className="w-full">
               <TabsList className="mb-2">
                 {routing.locales.map((locale) => (
@@ -211,10 +214,11 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
               isSubmitting={isSubmitting}
               onCancel={() => redirect("/dashboard/products")}
             />
-          </form>
-        </Form>
-      )}
-    </div>
+          </Card>
+          <ImageUploader form={form} uploadedImages={product?.images} />
+        </div>
+      </form>
+    </Form>
   );
 }
 
