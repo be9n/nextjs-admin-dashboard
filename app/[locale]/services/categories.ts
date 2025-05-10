@@ -1,10 +1,33 @@
+import { serialize } from "object-to-formdata";
+import { CategoryFormValues } from "../dashboard/categories/schemas/categorySchema";
 import authAxios from "../lib/authAxios";
-import { IntBoolean } from "../types/global";
+import {
+  IntBoolean,
+  Pagination,
+  SuccessApiResponse,
+} from "../types/global";
+import { Category, CategoryListItem, EditCategory } from "../types/categories";
 
-export type CategoryListItem = {
-  id: number;
-  name: string;
-  children?: CategoryListItem[];
+export type PaginatedCategories = {
+  data: Category[];
+  pagination: Pagination;
+};
+
+export const getCategories = async (
+  params?: Record<string, string>
+): Promise<PaginatedCategories | null> => {
+  const queryString = new URLSearchParams(params).toString();
+  const { data: response } = await authAxios.get(`/categories?${queryString}`);
+
+  return response.data.categories;
+};
+
+export const getCategory = async (
+  categoryId: string
+): Promise<EditCategory | null> => {
+  const { data: response } = await authAxios.get(`/categories/${categoryId}`);
+
+  return response.data.category;
 };
 
 export const getCategoriesList = async ({
@@ -19,4 +42,44 @@ export const getCategoriesList = async ({
   );
 
   return response.data.categories;
+};
+
+export const createCategory = async ({
+  data,
+}: {
+  data: CategoryFormValues;
+}): Promise<SuccessApiResponse> => {
+  const formData = serialize(data);
+  const { data: response } = await authAxios.post("/categories", formData);
+
+  return response;
+};
+
+export const updateCategory = async ({
+  data,
+  categoryId,
+}: {
+  data: CategoryFormValues;
+  categoryId: number;
+}): Promise<SuccessApiResponse> => {
+  const formData = serialize(data);
+
+  formData.append("_method", "PUT");
+
+  const { data: response } = await authAxios.post(
+    `/categories/${categoryId}`,
+    formData
+  );
+
+  return response;
+};
+
+export const deleteCategory = async (
+  categoryId: number
+): Promise<SuccessApiResponse> => {
+  const { data: response } = await authAxios.delete(
+    `/categories/${categoryId}`
+  );
+
+  return response;
 };

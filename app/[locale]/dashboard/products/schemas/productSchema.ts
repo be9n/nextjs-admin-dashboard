@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 /**
  * Create the product form schema with dynamic fields for all supported locales
  */
-export function useProductFormSchema() {
+export function useProductFormSchema(isUpdating = false) {
   const tForm = useTranslations("global.from");
   const tGlobal = useTranslations("global");
 
@@ -15,11 +15,9 @@ export function useProductFormSchema() {
 
   // Add validation for each locale
   routing.locales.forEach((locale) => {
-    nameFields[locale] = z
-      .string()
-      .min(1, {
-        message: tForm("translatedNameRequired", { locale: tGlobal(locale) }),
-      });
+    nameFields[locale] = z.string().min(1, {
+      message: tForm("translatedNameRequired", { locale: tGlobal(locale) }),
+    });
 
     descriptionFields[locale] = z.string().max(255, {
       message: tForm("maxDescriptionLength", {
@@ -28,16 +26,19 @@ export function useProductFormSchema() {
     });
   });
 
-  // Then create the complete schema
-  return z.object({
+  const rules = {
     name: z.object(nameFields),
     description: z.object(descriptionFields),
     price: z.number().min(0, { message: tForm("priceRequired") }),
     category_id: z.number().min(1, { message: tForm("categoryRequired") }),
-    images: z.array(z.instanceof(File)).min(1, {
-      message: tGlobal("imagesRequired"),
-    }),
-  });
+    images: isUpdating
+      ? z.array(z.instanceof(File)).optional()
+      : z.array(z.instanceof(File)).min(1, {
+          message: tGlobal("imagesRequired"),
+        }),
+  };
+
+  return z.object(rules);
 }
 
 /**

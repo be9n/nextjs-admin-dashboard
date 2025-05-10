@@ -1,47 +1,63 @@
 {
-    "HomePage": {
-      "title": "مرحبا بك في الصفحة الرئيسية",
-      "about": "الذهاب إلى صفحة المعلومات"
+  "HomePage": {
+    "title": "مرحبا بك في الصفحة الرئيسية",
+    "about": "الذهاب إلى صفحة المعلومات"
+  },
+  "RolesPage": {
+    "title": "الأدوار",
+    "createRole": "إنشاء دور جديد",
+    "columns": {
+      "id": "المعرف",
+      "title": "العنوان",
+      "permissionsCount": "عدد الصلاحيات",
+      "actions": "الإجراءات"
     },
-    "RolesPage": {
-      "title": "الأدوار",
-      "createRole": "إنشاء دور جديد",
-      "columns": {
-        "id": "المعرف",
-        "title": "العنوان",
-        "permissionsCount": "عدد الصلاحيات",
-        "actions": "الإجراءات"
-      },
-      "noResults": "لا توجد نتائج."
+    "noResults": "لا توجد نتائج."
+  },
+  "products": {
+    "title": "المنتجات",
+    "createProduct": "إنشاء منتج جديد",
+    "columns": {
+      "id": "المعرف",
+      "name": "الاسم",
+      "price": "السعر",
+      "categoryName": "اسم الفئة",
+      "actions": "الإجراءات"
     },
-    "products": {
-      "title": "المنتجات",
-      "createProduct": "إنشاء منتج جديد",
-      "columns": {
-        "id": "المعرف",
-        "name": "الاسم",
-        "price": "السعر",
-        "categoryName": "اسم الفئة",
-        "actions": "الإجراءات"
-      },
-      "noResults": "لا توجد نتائج.",
-      "menu": {
-        "copyProductId": "نسخ معرف المنتج",
-        "editProduct": "تعديل المنتج",
-        "delete": "حذف"
-      }
+    "noResults": "لا توجد نتائج.",
+    "menu": {
+      "copyProductId": "نسخ معرف المنتج",
+      "editProduct": "تعديل المنتج",
+      "delete": "حذف"
+    }
+  },
+  "categories": {
+    "title": "الفئات",
+    "createCategory": "إنشاء فئة جديدة",
+    "columns": {
+      "id": "المعرف",
+      "name": "الاسم",
+      "parentCategoryName": "اسم الفئة الأصلية",
+      "productsCount": "عدد المنتجات",
+      "actions": "الإجراءات"
     },
-    "global": {
-      "searchFor": "ابحث عن {entity}",
-      "ar": "العربية",
-      "en": "الانجليزية",
-      "imagesRequired": "يجب أن يكون على الأقل صورة واحدة",
-      "from": {
-        "translatedNameRequired": "الاسم في {locale} مطلوب",
-        "nameRequired": "الاسم مطلوب",
-        "priceRequired": "السعر مطلوب",
-        "categoryRequired": "الفئة مطلوبة",
-        "maxDescriptionLength": "يجب أن يكون الوصف أقل من {length} حرف"
-      }
+    "menu": {
+      "copyCategoryId": "نسخ معرف الفئة",
+      "editCategory": "تعديل الفئة",
+      "delete": "حذف"
+    }
+  },
+  "global": {
+    "searchFor": "ابحث عن {entity}",
+    "ar": "العربية",
+    "en": "الانجليزية",
+    "imagesRequired": "يجب أن يكون على الأقل صورة واحدة",
+    "from": {
+      "translatedNameRequired": "الاسم في {locale} مطلوب",
+      "nameRequired": "الاسم مطلوب",
+      "priceRequired": "السعر مطلوب",
+      "categoryRequired": "الفئة مطلوبة",
+      "maxDescriptionLength": "يجب أن يكون الوصف أقل من {length} حرف"
     }
   }
+}

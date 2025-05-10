@@ -11,12 +11,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
-import { deleteProduct, Product } from "@/app/[locale]/services/products";
+import {
+  deleteProduct,
+  PaginatedProducts,
+  Product,
+} from "@/app/[locale]/services/products";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import DeleteDialog2 from "@/components/DeleteDialog2";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { MUTATION_CACHE_UPDATE_DELAY } from "@/app/[locale]/constants/timing";
+import DeleteDialog from "@/components/DeleteDialog";
 
 // Custom hook to get translated columns
 export function useColumns(
@@ -212,10 +217,16 @@ const DeleteProductAction = ({ product }: { product: Product }) => {
   const deleteMutation = useMutation({
     mutationFn: deleteProduct,
     onSuccess: (res) => {
-      queryClient.invalidateQueries({
-        queryKey: ["products"],
-        exact: false,
-      });
+      setTimeout(() => {
+        queryClient.setQueriesData(
+          { queryKey: ["products"] },
+          (old: PaginatedProducts) => ({
+            ...old,
+            data: old.data.filter((p: Product) => p.id !== product.id),
+          })
+        );
+      }, MUTATION_CACHE_UPDATE_DELAY);
+
       toast.success(res.message || "Deleted successfully");
     },
     onError: (error: ApiError) => {
@@ -224,9 +235,7 @@ const DeleteProductAction = ({ product }: { product: Product }) => {
   });
 
   return (
-    <DeleteDialog2
-      action={() => deleteMutation.mutateAsync(product.id)}
-    >
+    <DeleteDialog action={() => deleteMutation.mutateAsync(product.id)}>
       <DropdownMenuItem
         onSelect={(e) => e.preventDefault()}
         className="cursor-pointer"
@@ -234,6 +243,6 @@ const DeleteProductAction = ({ product }: { product: Product }) => {
       >
         {menuT("delete")}
       </DropdownMenuItem>
-    </DeleteDialog2>
+    </DeleteDialog>
   );
 };

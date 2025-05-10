@@ -31,6 +31,25 @@
       "delete": "Delete"
     }
   },
+  "categories": {
+    "title": "Categories",
+    "createCategory": "Create Category",
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "parentCategoryName": "Parent Category Name",
+      "productsCount": "Products Count",
+      "actions": "Actions"
+    },
+    "menu": {
+      "copyCategoryId": "Copy category ID",
+      "editCategory": "Edit Category",
+      "delete": "Delete"
+    },
+    "form": {
+      "parentCategoryRequired": "The parent category is required"
+    }
+  },
   "global": {
     "searchFor": "Search for {entity}",
     "ar": "Arabic",
@@ -41,7 +60,9 @@
       "nameRequired": "The name is required",
       "priceRequired": "The price is required",
       "categoryRequired": "The category is required",
-      "maxDescriptionLength": "The description must be less than {length} characters"
+      "maxDescriptionLength": "The description must be less than {length} characters",
+      "imageRequired": "The image is required",
+      "atLeastOneImageRequired": "At least one image is required"
     }
   }
 }

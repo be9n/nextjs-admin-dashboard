@@ -66,6 +66,21 @@ const items: SidebarItem[] = [
       },
     ],
   },
+  {
+    title: "Categories",
+    icon: ShoppingBag,
+    children: [
+      {
+        title: "View All",
+        url: "/dashboard/categories",
+        activePatterns: ["^/dashboard/categories/[^/]+/edit$"],
+      },
+      {
+        title: "Create Category",
+        url: "/dashboard/categories/create",
+      },
+    ],
+  },
 ];
 
 export default function AppSidebar() {

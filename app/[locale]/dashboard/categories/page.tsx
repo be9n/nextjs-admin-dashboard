@@ -9,31 +9,30 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { ApiError } from "../../types/global";
-import { getProducts, PaginatedProducts } from "../../services/products";
+import { getCategories, PaginatedCategories } from "../../services/categories";
 
 export default function ProductsPage() {
-  const t = useTranslations("products");
+  const t = useTranslations("categories");
   const searchParams = useSearchParams();
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
-  const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+  const [selectedCategoryIds, setSelectedCategoryIds] = useState<number[]>([]);
 
   const queryParams = {
     page: searchParams.get("page") || "",
     sort_by: searchParams.get("sort_by") || "",
     sort_dir: searchParams.get("sort_dir") || "",
     search: searchParams.get("search") || "",
-    category_id: searchParams.get("category_id") || "",
   };
 
   const {
-    data: products,
+    data: categories,
     isLoading,
     isFetching,
     error,
     isError,
-  } = useQuery<PaginatedProducts | null, ApiError>({
-    queryKey: ["products", queryParams],
-    queryFn: () => getProducts(queryParams),
+  } = useQuery<PaginatedCategories | null, ApiError>({
+    queryKey: ["categories", queryParams],
+    queryFn: () => getCategories(queryParams),
     placeholderData: keepPreviousData,
   });
 
@@ -48,19 +47,21 @@ export default function ProductsPage() {
       <div className="flex items-center">
         <h2 className="font-bold text-lg md:text-2xl">{t("title")}</h2>
         <Button className="ms-auto" asChild>
-          <Link href={"/dashboard/products/create"}>{t("createProduct")}</Link>
+          <Link href={"/dashboard/categories/create"}>
+            {t("createCategory")}
+          </Link>
         </Button>
       </div>
 
       <DataTable
-        data={products?.data}
-        pagination={products?.pagination}
+        data={categories?.data}
+        pagination={categories?.pagination}
         isLoading={isLoading}
         isFetching={isFetching}
         visibleColumns={visibleColumns}
         setVisibleColumns={setVisibleColumns}
-        selectedProductIds={selectedProductIds}
-        setSelectedProductIds={setSelectedProductIds}
+        setSelectedProductIds={setSelectedCategoryIds}
+        selectedProductIds={selectedCategoryIds}
       />
     </div>
   );

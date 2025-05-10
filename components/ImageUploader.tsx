@@ -1,6 +1,6 @@
 "use client";
 
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, Path, PathValue } from "react-hook-form";
 import { Card, CardContent } from "./ui/card";
 import {
   FormControl,
@@ -10,48 +10,75 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { ProductFormValues } from "@/app/[locale]/dashboard/products/schemas/productSchema";
 import Image from "next/image";
 import { type Image as UploadedImage } from "@/app/[locale]/types/global";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { ImagePlus, X } from "lucide-react";
-import DeleteDialog2 from "./DeleteDialog2";
 import authAxios from "@/app/[locale]/lib/authAxios";
-import { toast } from "sonner";
 import { useState, useEffect } from "react";
+import DeleteDialog from "./DeleteDialog";
+import { toast } from "sonner";
 
 // Main component that manages the file input
-export default function ImageUploader({
+export default function ImageUploader<
+  T extends { images?: File[]; image?: File }
+>({
   form,
-  uploadedImages,
+  uploaded,
+  label = "Images",
+  multiple = false,
+  inputName,
 }: {
-  form: UseFormReturn<ProductFormValues>;
-  uploadedImages?: UploadedImage[];
+  form: UseFormReturn<T>;
+  uploaded?: UploadedImage | UploadedImage[];
+  label?: string;
+  multiple?: boolean;
+  inputName: Path<T>;
 }) {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    form.setValue("images", [...form.getValues("images"), ...files]);
+    form.clearErrors(inputName as Path<T>);
+
+    if (!multiple) {
+      form.setValue(inputName as Path<T>, files[0] as PathValue<T, Path<T>>);
+    } else {
+      const currentImages = form.getValues(inputName as Path<T>) as File[];
+      form.setValue(
+        inputName as Path<T>,
+        [...currentImages, ...files] as PathValue<T, Path<T>>
+      );
+    }
   };
 
   const removeSelectedImage = (imageIndex: number) => {
-    form.setValue(
-      "images",
-      form.getValues("images").filter((_image, index) => index !== imageIndex)
-    );
+    if (!multiple) {
+      form.setValue(inputName as Path<T>, undefined as PathValue<T, Path<T>>);
+    } else {
+      const currentImages = form.getValues(inputName as Path<T>) as File[];
+      form.setValue(
+        inputName as Path<T>,
+        currentImages.filter(
+          (_image: File, index: number) => index !== imageIndex
+        ) as PathValue<T, Path<T>>
+      );
+    }
+
+    form.trigger(inputName as Path<T>);
   };
+
+  const images = form.watch(inputName as Path<T>) as File | File[];
+  const imagesArray = Array.isArray(images) ? images : images ? [images] : [];
 
   return (
     <Card className="lg:col-span-1">
       <CardContent>
         <FormField
           control={form.control}
-          name="images"
+          name={inputName as Path<T>}
           render={() => (
             <FormItem>
-              <FormLabel className="text-base font-semibold">
-                Product Images
-              </FormLabel>
+              <FormLabel className="text-base font-semibold">{label}</FormLabel>
               <FormControl>
                 <div className="border rounded-lg p-4 bg-muted/20">
                   <label
@@ -60,9 +87,7 @@ export default function ImageUploader({
                   >
                     <div className="flex flex-col items-center text-center py-2">
                       <ImagePlus className="h-6 w-6 mb-2 text-muted-foreground" />
-                      <p className="text-sm font-medium">
-                        Select Product Images
-                      </p>
+                      <p className="text-sm font-medium">Select {label}</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         PNG, JPG, GIF up to 10MB
                       </p>
@@ -71,23 +96,29 @@ export default function ImageUploader({
                     <Input
                       id="image-upload"
                       type="file"
-                      multiple
+                      multiple={multiple}
                       accept="image/*"
                       onChange={handleFileChange}
                       className="cursor-pointer hidden"
                     />
                   </label>
 
-                  {form.watch("images").length > 0 && (
+                  {imagesArray.length > 0 && (
                     <div className="mt-4 py-2 px-3 bg-muted rounded-md text-sm flex justify-between items-center">
                       <span className="font-medium">
-                        {form.watch("images").length} image(s) selected
+                        {imagesArray.length} image(s) selected
                       </span>
                       <Button
                         variant="ghost"
                         size="sm"
                         className="h-7 text-xs cursor-pointer bg-gray-200 hover:bg-gray-200/80"
-                        onClick={() => form.setValue("images", [])}
+                        onClick={() => {
+                          form.setValue(
+                            inputName as Path<T>,
+                            (multiple ? [] : undefined) as PathValue<T, Path<T>>
+                          );
+                          form.trigger(inputName as Path<T>);
+                        }}
                       >
                         Clear All
                       </Button>
@@ -101,11 +132,15 @@ export default function ImageUploader({
         />
 
         <SelectedImagesContainer
-          images={form.watch("images")}
+          images={imagesArray}
           onRemove={removeSelectedImage}
         />
 
-        <UploadedImagesContainer images={uploadedImages || []} />
+        <UploadedImagesContainer
+          images={
+            uploaded ? (Array.isArray(uploaded) ? uploaded : [uploaded]) : []
+          }
+        />
       </CardContent>
     </Card>
   );
@@ -166,18 +201,17 @@ const UploadedImagesContainer = ({ images }: { images: UploadedImage[] }) => {
     setUploadedImages(images);
   }, [images]);
 
-  const removeImage = (imageId: number): Promise<void> => {
-    return authAxios
+  const removeImage = async (imageId: number) => {
+    return await authAxios
       .delete(`/files/${imageId}`)
-      .then(() => {
+      .then(({ data: res }) => {
         // Remove the deleted image from state
         setUploadedImages((prev) => prev.filter((img) => img.id !== imageId));
-        toast.success("Image deleted successfully");
+
+        toast.success(res.message);
       })
       .catch((error) => {
-        console.log(error);
-
-        toast.error("Failed to delete image");
+        toast.error(error.message);
       });
   };
 
@@ -201,7 +235,7 @@ const UploadedImagesContainer = ({ images }: { images: UploadedImage[] }) => {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover"
             />
-            <DeleteDialog2 action={() => removeImage(image.id)}>
+            <DeleteDialog action={() => removeImage(image.id)}>
               <Button
                 variant="destructive"
                 size="icon"
@@ -210,7 +244,7 @@ const UploadedImagesContainer = ({ images }: { images: UploadedImage[] }) => {
               >
                 <X className="h-4 w-4" />
               </Button>
-            </DeleteDialog2>
+            </DeleteDialog>
             <div className="absolute bottom-0 left-0 right-0 bg-black/60 px-2 py-1 text-[10px] text-white truncate">
               {image.name}
             </div>

@@ -5,11 +5,13 @@ import { LoadingTextSwap } from "./LoadingTextSwap";
 type FormButtonsProps = {
   onCancel: () => void;
   isSubmitting: boolean;
+  submitDisabled?: boolean;
 };
 
 export default function FormButtons({
   isSubmitting,
   onCancel,
+  submitDisabled,
 }: FormButtonsProps) {
   return (
     <div className="flex gap-2 justify-end mt-4">
@@ -21,7 +23,11 @@ export default function FormButtons({
       >
         Cancel
       </Button>
-      <Button type="submit" className="cursor-pointer" disabled={isSubmitting}>
+      <Button
+        type="submit"
+        className="cursor-pointer"
+        disabled={isSubmitting ||submitDisabled}
+      >
         <LoadingTextSwap isLoading={isSubmitting}>Submit</LoadingTextSwap>
       </Button>
     </div>

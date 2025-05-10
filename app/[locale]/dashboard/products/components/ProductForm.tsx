@@ -19,10 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  CategoryListItem,
-  getCategoriesList,
-} from "@/app/[locale]/services/categories";
+import { getCategoriesList } from "@/app/[locale]/services/categories";
 import { cn } from "@/lib/utils";
 import { ApiError, SuccessApiResponse } from "@/app/[locale]/types/global";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -47,6 +44,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import ImageUploader from "@/components/ImageUploader";
+import { CategoryListItem } from "@/app/[locale]/types/categories";
 
 type ProductFormProps = {
   product?: EditProduct | null;
@@ -56,8 +54,9 @@ type ProductFormProps = {
 export default function ProductForm({ product, isLoading }: ProductFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const productFormSchema = useProductFormSchema();
+  const productFormSchema = useProductFormSchema(!!product);
   const tGlobal = useTranslations("global");
+  const [activeTab, setActiveTab] = useState<string>("en");
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -72,13 +71,13 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
       },
       price: product?.price ?? 0,
       category_id: product?.category_id ?? 0,
-      images: [],
+      images: [] as File[],
     },
     mode: "onChange",
   });
 
   const {
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = form;
 
   const createProductMutation = useMutation({
@@ -125,6 +124,20 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
     } catch {}
   };
 
+  // Switch to the first tab with an error when validation fails
+  useEffect(() => {
+    if (errors.name) {
+      // Find the first locale with an error
+      const localeWithError = routing.locales.find(
+        (locale) => errors.name?.[locale]
+      );
+
+      if (localeWithError) {
+        setActiveTab(localeWithError);
+      }
+    }
+  }, [errors.name]);
+
   return isLoading ? (
     <ProductFormSkeleton />
   ) : (
@@ -132,11 +145,17 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:items-start">
           <Card className="p-4 lg:col-span-2">
-            <Tabs defaultValue="en" className="w-full">
+            <Tabs
+              value={activeTab}
+              onValueChange={setActiveTab}
+              className="w-full"
+            >
               <TabsList className="mb-2">
                 {routing.locales.map((locale) => (
                   <TabsTrigger
-                    className="cursor-pointer"
+                    className={cn("cursor-pointer", {
+                      "text-destructive": errors.name?.[locale],
+                    })}
                     key={locale}
                     value={locale}
                   >
@@ -213,9 +232,15 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
             <FormButtons
               isSubmitting={isSubmitting}
               onCancel={() => redirect("/dashboard/products")}
+              submitDisabled={Object.keys(form.formState.errors).length > 0}
             />
           </Card>
-          <ImageUploader form={form} uploadedImages={product?.images} />
+          <ImageUploader<ProductFormValues>
+            form={form}
+            uploaded={product?.images}
+            inputName="images"
+            multiple
+          />
         </div>
       </form>
     </Form>

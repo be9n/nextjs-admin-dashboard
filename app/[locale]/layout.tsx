@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
-import Providers from "./providers";
-import { hasLocale, NextIntlClientProvider } from "next-intl";
+import { hasLocale } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
+import { Providers } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,14 +29,12 @@ export default async function RootLayout({
 
   const dir = locale === "ar" ? "rtl" : "ltr";
   return (
-    <html lang={locale} dir={dir}>
+    <html lang={locale} dir={dir} suppressHydrationWarning>
       <body className={inter.className}>
-        <NextIntlClientProvider>
-          <Providers>
-            {children}
-            <Toaster richColors />
-          </Providers>
-        </NextIntlClientProvider>
+        <Providers>
+          {children}
+          <Toaster richColors />
+        </Providers>
       </body>
     </html>
   );
