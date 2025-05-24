@@ -1,4 +1,4 @@
-import { ApiError, TableColumn } from "@/app/[locale]/types/global";
+import { ApiError, TableColumn } from "@/types/global";
 import { SortableColumn } from "@/components/SortableColumn";
 import SelectRow from "@/components/SelectRow";
 import {
@@ -18,11 +18,11 @@ import { Link } from "@/i18n/navigation";
 import {
   deleteCategory,
   PaginatedCategories,
-} from "@/app/[locale]/services/categories";
+} from "@/services/categories";
 import { Badge } from "@/components/ui/badge";
-import { MUTATION_CACHE_UPDATE_DELAY } from "@/app/[locale]/constants/timing";
+import { MUTATION_CACHE_UPDATE_DELAY } from "@/constants/timing";
 import DeleteDialog from "@/components/DeleteDialog";
-import { Category } from "@/app/[locale]/types/categories";
+import { Category } from "@/types/categories";
 
 // Custom hook to get translated columns
 export function useColumns(

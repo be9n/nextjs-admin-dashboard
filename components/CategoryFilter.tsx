@@ -1,7 +1,7 @@
 "use client";
 
-import { CategoryListItem, getCategoriesList } from "@/app/[locale]/services/categories";
-import { ApiError } from "@/app/[locale]/types/global"; 
+import { getCategoriesList } from "@/services/categories";
+import { ApiError } from "@/types/global";
 import { useQuery } from "@tanstack/react-query";
 import {
   Select,
@@ -10,9 +10,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
-import { parseAsInteger, useQueryState } from "nuqs";
 import { Skeleton } from "./ui/skeleton";
 import { cn } from "@/lib/utils";
+import { CategoryListItem } from "@/types/categories";
+import useFilters from "@/hooks/useFilters";
 
 export default function CategoryFilter() {
   const { data: categoriesList, isLoading } = useQuery<
@@ -25,18 +26,20 @@ export default function CategoryFilter() {
     staleTime: 60 * 1000, // 1 minute stale time
     gcTime: 10 * 60 * 1000, // 10 minutes cache time
   });
-  const [categoryId, setCategoryId] = useQueryState("category_id");
-  const [, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
+
+  const { filters, updateFilter } = useFilters();
 
   const onSelect = (value: string) => {
-    setCategoryId(value === "all" ? null : value);
-    setPage(1);
+    updateFilter("category_id", value === "all" ? undefined : value);
   };
 
   return (
-    <Select defaultValue={categoryId || "all"} onValueChange={onSelect}>
+    <Select
+      defaultValue={filters.category_id || "all"}
+      onValueChange={onSelect}
+    >
       <SelectTrigger className="w-[180px] cursor-pointer">
-        {categoryId && isLoading ? (
+        {filters.category_id && isLoading ? (
           <Skeleton className="w-25 h-4" />
         ) : (
           <SelectValue placeholder="Select A Category" />
@@ -58,7 +61,7 @@ export default function CategoryFilter() {
               {(categoriesList || []).map((item) => (
                 <SelectItem
                   className={cn("cursor-pointer w-full", {
-                    "bg-gray-100": item.id.toString() === categoryId,
+                    "bg-gray-100": item.id.toString() === filters.category_id,
                   })}
                   key={item.id}
                   value={item.id.toString()}

@@ -1,12 +1,12 @@
 "use client";
 
-import { ApiError } from "@/app/[locale]/types/global";
+import { ApiError } from "@/types/global";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useQuery } from "@tanstack/react-query";
 import { use } from "react";
 import CategoryForm from "../../components/CategoryForm";
-import { EditCategory } from "@/app/[locale]/types/categories";
-import { getCategory } from "@/app/[locale]/services/categories";
+import { EditCategory } from "@/types/categories";
+import { getCategory } from "@/services/categories";
 
 export default function EditPage({
   params,

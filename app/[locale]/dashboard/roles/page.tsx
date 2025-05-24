@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
-import { ApiError } from "../../types/global";
-import { getRoles, PaginatedRoles } from "../../services/roles";
+import { ApiError } from "../../../../types/global";
+import { getRoles, PaginatedRoles } from "../../../../services/roles";
 
 export default function RolesPage() {
   const t = useTranslations("RolesPage");

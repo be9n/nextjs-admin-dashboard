@@ -1,4 +1,4 @@
-import { getRole } from "@/app/[locale]/services/roles";
+import { getRole } from "@/services/roles";
 import RoleForm from "../../components/RoleForm";
 
 export default async function Page({

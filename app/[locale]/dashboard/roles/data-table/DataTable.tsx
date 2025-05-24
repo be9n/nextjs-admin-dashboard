@@ -1,7 +1,7 @@
 "use client";
 
-import CustomPagination from "@/components/CustomPagination";
-import { Pagination } from "@/app/[locale]/types/global";
+import Pagination from "@/components/Pagination";
+import { Pagination as PaginationType } from "@/types/global";
 import {
   Table,
   TableBody,
@@ -16,12 +16,12 @@ import { cn } from "@/lib/utils";
 import SearchBox from "@/components/SearchBox";
 import ColumnVisibilityMenu from "@/components/ColumnVisibilityMenu";
 import { useColumns } from "./Columns";
-import { Role } from "@/app/[locale]/services/roles";
+import { Role } from "@/services/roles";
 import { useTranslations } from "next-intl";
 
 interface DataTableProps {
   data?: Role[];
-  pagination?: Pagination;
+  pagination?: PaginationType;
   isLoading?: boolean;
   isFetching?: boolean;
   setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>;
@@ -66,7 +66,10 @@ export default function DataTable({
             <TableRow className="bg-white">
               {columns.map((column) =>
                 !column.canBeInvisible || visibleColumns.includes(column.id) ? (
-                  <TableHead key={column.id} className={cn("text-start", column.className)}>
+                  <TableHead
+                    key={column.id}
+                    className={cn("text-start", column.className)}
+                  >
                     {column.header}
                   </TableHead>
                 ) : null
@@ -77,7 +80,7 @@ export default function DataTable({
             {isLoading ? (
               Array.from({ length: 5 }).map((_, index) => (
                 <TableRow key={`skeleton-${index}`}>
-                  {columns.map((column, cellIndex) => (
+                  {columns.map((_, cellIndex) => (
                     <TableCell key={`skeleton-cell-${cellIndex}`}>
                       <Skeleton className="h-6 w-full bg-gray-200" />
                     </TableCell>
@@ -88,7 +91,8 @@ export default function DataTable({
               data?.map((role) => (
                 <TableRow key={role.id}>
                   {columns.map((column) =>
-                    !column.canBeInvisible || visibleColumns.includes(column.id) ? (
+                    !column.canBeInvisible ||
+                    visibleColumns.includes(column.id) ? (
                       <TableCell key={column.id}>
                         {column.cell ? column.cell(role) : null}
                       </TableCell>
@@ -106,7 +110,7 @@ export default function DataTable({
           </TableBody>
         </Table>
       </div>
-      <CustomPagination paginationData={pagination} isLoading={isFetching} />
+      <Pagination paginationData={pagination} isLoading={isFetching} />
     </div>
   );
 }

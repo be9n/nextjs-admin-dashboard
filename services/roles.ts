@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { RoleFormValues } from "../dashboard/roles/components/RoleForm";
+import { RoleFormValues } from "../app/[locale]/dashboard/roles/components/RoleForm";
 import authAxios from "../lib/authAxios";
 import { ApiError, Pagination, SuccessApiResponse } from "../types/global";
 import { serialize } from "object-to-formdata";

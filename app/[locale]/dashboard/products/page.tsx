@@ -8,21 +8,23 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
-import { ApiError } from "../../types/global";
-import { getProducts, PaginatedProducts } from "../../services/products";
+import { ApiError } from "../../../../types/global";
+import { getProducts, PaginatedProducts } from "../../../../services/products";
+import useFilters from "@/hooks/useFilters";
 
 export default function ProductsPage() {
   const t = useTranslations("products");
   const searchParams = useSearchParams();
   const [visibleColumns, setVisibleColumns] = useState<string[]>([]);
   const [selectedProductIds, setSelectedProductIds] = useState<number[]>([]);
+  const { getPreparedFiltersObject } = useFilters();
 
   const queryParams = {
     page: searchParams.get("page") || "",
     sort_by: searchParams.get("sort_by") || "",
     sort_dir: searchParams.get("sort_dir") || "",
     search: searchParams.get("search") || "",
-    category_id: searchParams.get("category_id") || "",
+    ...getPreparedFiltersObject(),
   };
 
   const {
@@ -32,7 +34,7 @@ export default function ProductsPage() {
     error,
     isError,
   } = useQuery<PaginatedProducts | null, ApiError>({
-    queryKey: ["products", queryParams],
+    queryKey: ["products", { queryParams }],
     queryFn: () => getProducts(queryParams),
     placeholderData: keepPreviousData,
   });

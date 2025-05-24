@@ -1,7 +1,7 @@
 "use client";
 
-import CustomPagination from "@/components/CustomPagination";
-import { Pagination } from "@/app/[locale]/types/global";
+import Pagination from "@/components/Pagination";
+import { Pagination as PaginationType } from "@/types/global";
 import {
   Table,
   TableBody,
@@ -17,12 +17,12 @@ import SearchBox from "@/components/SearchBox";
 import ColumnVisibilityMenu from "@/components/ColumnVisibilityMenu";
 import { useColumns } from "./Columns";
 import FiltersContainer from "./FiltersContainer";
-import { Category } from "@/app/[locale]/services/categories";
 import { useTranslations } from "next-intl";
+import { Category } from "@/types/categories";
 
 interface DataTableProps {
   data?: Category[];
-  pagination?: Pagination;
+  pagination?: PaginationType;
   isLoading?: boolean;
   isFetching?: boolean;
   setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>;
@@ -116,7 +116,7 @@ export default function DataTable({
           </TableBody>
         </Table>
       </div>
-      <CustomPagination paginationData={pagination} isLoading={isFetching} />
+      <Pagination paginationData={pagination} isLoading={isFetching} />
     </div>
   );
 }

@@ -44,7 +44,8 @@
     "menu": {
       "copyCategoryId": "نسخ معرف الفئة",
       "editCategory": "تعديل الفئة",
-      "delete": "حذف"
+      "delete": "حذف",
+      "deleteDescription": "هل أنت متأكد أنك تريد حذف هذه الفئة؟"
     }
   },
   "global": {

@@ -8,8 +8,8 @@ import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
-import { ApiError } from "../../types/global";
-import { getCategories, PaginatedCategories } from "../../services/categories";
+import { ApiError } from "../../../../types/global";
+import { getCategories, PaginatedCategories } from "../../../../services/categories";
 
 export default function ProductsPage() {
   const t = useTranslations("categories");

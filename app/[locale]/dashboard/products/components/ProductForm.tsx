@@ -19,16 +19,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getCategoriesList } from "@/app/[locale]/services/categories";
+import { getCategoriesList } from "@/services/categories";
 import { cn } from "@/lib/utils";
-import { ApiError, SuccessApiResponse } from "@/app/[locale]/types/global";
+import { ApiError, SuccessApiResponse } from "@/types/global";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import {
   createProduct,
   EditProduct,
   updateProduct,
-} from "@/app/[locale]/services/products";
+} from "@/services/products";
 import { toast } from "sonner";
 import { redirect, useRouter } from "next/navigation";
 import ProductFormSkeleton from "./ProductFormSkeleton";
@@ -37,14 +37,14 @@ import FormButtons from "@/components/FormButtons";
 import {
   useProductFormSchema,
   ProductFormValues,
-} from "../schemas/productSchema";
+} from "../../../../../schemas/productSchema";
 import { routing } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import ImageUploader from "@/components/ImageUploader";
-import { CategoryListItem } from "@/app/[locale]/types/categories";
+import { CategoryListItem } from "@/types/categories";
 
 type ProductFormProps = {
   product?: EditProduct | null;

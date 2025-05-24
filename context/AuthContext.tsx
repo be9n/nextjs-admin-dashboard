@@ -53,7 +53,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       const { data } = await authAxios.post(`/login`, credentials);
       const { user, access_token: accessToken } = data.data;
-      console.log(data);
 
       await setAccessTokenCookie(accessToken);
       await setPermissions(user.permissions);

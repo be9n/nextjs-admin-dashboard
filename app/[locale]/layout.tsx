@@ -5,7 +5,7 @@ import { Toaster } from "sonner";
 import { hasLocale } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { notFound } from "next/navigation";
-import { Providers } from "./providers";
+import { Providers } from "../../providers";
 
 const inter = Inter({ subsets: ["latin"] });
 

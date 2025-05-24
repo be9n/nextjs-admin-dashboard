@@ -1,7 +1,7 @@
 "use client";
 
-import { EditProduct, getProduct } from "@/app/[locale]/services/products";
-import { ApiError } from "@/app/[locale]/types/global";
+import { EditProduct, getProduct } from "@/services/products";
+import { ApiError } from "@/types/global";
 import { useErrorNotification } from "@/hooks/useErrorNotification";
 import { useQuery } from "@tanstack/react-query";
 import { use } from "react";

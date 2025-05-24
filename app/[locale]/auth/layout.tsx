@@ -1,6 +1,6 @@
 "use client";
 
-import { AuthProvider } from "@/app/[locale]/context/AuthContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 export default function DashboardLayout({
   children,

@@ -1,4 +1,4 @@
-import { ApiError, TableColumn } from "@/app/[locale]/types/global";
+import { ApiError, TableColumn } from "@/types/global";
 import { SortableColumn } from "@/components/SortableColumn";
 import SelectRow from "@/components/SelectRow";
 import {
@@ -15,12 +15,12 @@ import {
   deleteProduct,
   PaginatedProducts,
   Product,
-} from "@/app/[locale]/services/products";
+} from "@/services/products";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { MUTATION_CACHE_UPDATE_DELAY } from "@/app/[locale]/constants/timing";
+import { MUTATION_CACHE_UPDATE_DELAY } from "@/constants/timing";
 import DeleteDialog from "@/components/DeleteDialog";
 
 // Custom hook to get translated columns

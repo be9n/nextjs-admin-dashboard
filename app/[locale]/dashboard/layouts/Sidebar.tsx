@@ -1,7 +1,7 @@
 "use client";
 
-import { useAuth } from "@/app/[locale]/context/AuthContext";
-import { SidebarItem } from "@/app/[locale]/types/global";
+import { useAuth } from "@/context/AuthContext";
+import { SidebarItem } from "@/types/global";
 import {
   Collapsible,
   CollapsibleContent,

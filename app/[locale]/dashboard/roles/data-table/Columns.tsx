@@ -1,4 +1,4 @@
-import { TableColumn } from "@/app/[locale]/types/global";
+import { TableColumn } from "@/types/global";
 import { SortableColumn } from "@/components/SortableColumn";
 import SelectRow from "@/components/SelectRow";
 import {
@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
-import { Role } from "@/app/[locale]/services/roles";
+import { Role } from "@/services/roles";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 

@@ -44,7 +44,8 @@
     "menu": {
       "copyCategoryId": "Copy category ID",
       "editCategory": "Edit Category",
-      "delete": "Delete"
+      "delete": "Delete",
+      "deleteDescription": "Are you sure you want to delete this category?"
     },
     "form": {
       "parentCategoryRequired": "The parent category is required"

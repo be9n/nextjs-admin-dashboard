@@ -1,5 +1,5 @@
 import { serialize } from "object-to-formdata";
-import { CategoryFormValues } from "../dashboard/categories/schemas/categorySchema";
+import { CategoryFormValues } from "../schemas/categorySchema";
 import authAxios from "../lib/authAxios";
 import {
   IntBoolean,
@@ -38,7 +38,7 @@ export const getCategoriesList = async ({
   withChildren?: IntBoolean;
 } = {}): Promise<CategoryListItem[] | null> => {
   const { data: response } = await authAxios.get(
-    `/categories_list?parent=${parentCategories}&with_children=${withChildren}`
+    `/categories/list?parent=${parentCategories}&with_children=${withChildren}`
   );
 
   return response.data.categories;

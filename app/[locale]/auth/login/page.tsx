@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useAuth } from "@/app/[locale]/context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
+import { ApiError } from "../../../../types/global";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -19,10 +20,11 @@ export default function LoginPage() {
       setIsLoading(true);
       await login({ email, password });
       router.push("/dashboard");
-    } catch (err: any) {
+    } catch (err) {
       setIsLoading(false);
-      console.log(`An error happened: ${err.response?.data?.message}`);
-      setError(err.response?.data?.message || "An error occurred during login");
+
+      const apiError = err as ApiError;
+      setError(apiError.message || "An error occurred during login");
     }
   };
 
@@ -92,7 +94,7 @@ export default function LoginPage() {
             href="/register"
             className="text-indigo-600 hover:text-indigo-500"
           >
-            Don't have an account? Register
+            Don&apos;t have an account? Register
           </Link>
         </div>
       </div>

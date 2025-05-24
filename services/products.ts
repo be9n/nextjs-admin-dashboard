@@ -2,7 +2,7 @@ import { serialize } from "object-to-formdata";
 import authAxios from "../lib/authAxios";
 import { Image, Pagination, SuccessApiResponse } from "../types/global";
 import { routing } from "@/i18n/routing";
-import { ProductFormValues } from "../dashboard/products/schemas/productSchema";
+import { ProductFormValues } from "../schemas/productSchema";
 
 type ProductsQueryParams = {
   search?: string;
@@ -30,7 +30,7 @@ export type LocalizedString = {
 };
 
 export const getProducts = async (
-  params?: ProductsQueryParams
+  params?: ProductsQueryParams,
 ): Promise<PaginatedProducts | null> => {
   const queryString = new URLSearchParams(params).toString();
   const { data: response } = await authAxios.get(`/products?${queryString}`);

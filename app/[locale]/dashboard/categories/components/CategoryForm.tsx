@@ -23,9 +23,9 @@ import {
   createCategory,
   getCategoriesList,
   updateCategory,
-} from "@/app/[locale]/services/categories";
+} from "@/services/categories";
 import { cn } from "@/lib/utils";
-import { ApiError, SuccessApiResponse } from "@/app/[locale]/types/global";
+import { ApiError, SuccessApiResponse } from "@/types/global";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { redirect, useRouter } from "next/navigation";
@@ -34,7 +34,7 @@ import FormButtons from "@/components/FormButtons";
 import {
   useCategoryFormSchema,
   CategoryFormValues,
-} from "../schemas/categorySchema";
+} from "../../../../../schemas/categorySchema";
 import { routing } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -43,7 +43,7 @@ import ProductFormSkeleton from "../../products/components/ProductFormSkeleton";
 import {
   CategoryListItem,
   EditCategory,
-} from "@/app/[locale]/types/categories";
+} from "@/types/categories";
 import ImageUploader from "@/components/ImageUploader";
 import { useEffect, useState } from "react";
 

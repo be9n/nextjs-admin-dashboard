@@ -1,4 +1,4 @@
-import { PermissionNode } from "@/app/[locale]/types/global";
+import { PermissionNode } from "@/types/global";
 import { useCallback } from "react";
 
 /**

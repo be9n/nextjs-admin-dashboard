@@ -1,18 +1,19 @@
 "use client";
 
+import { type Pagination as PaginationType } from "@/types/global";
 import { Button } from "@/components/ui/button";
-import { type Pagination } from "../app/types/global";
 import { parseAsInteger, useQueryState } from "nuqs";
 
 type PaginationProps = {
-  paginationData?: Pagination;
+  paginationData?: PaginationType;
   isLoading: boolean;
 };
 
-export default function CustomPagination({
+export default function Pagination({
   paginationData,
   isLoading,
 }: PaginationProps) {
+  
   const [page, setPage] = useQueryState("page", parseAsInteger.withDefault(1));
 
   const handlePageChange = (newPage: number) => {
@@ -26,7 +27,7 @@ export default function CustomPagination({
         size="sm"
         className="cursor-pointer"
         onClick={() => handlePageChange(page - 1)}
-        disabled={!paginationData?.has_prev_page || isLoading}
+        disabled={!paginationData?.prev_page || isLoading}
       >
         Previous
       </Button>
@@ -35,7 +36,7 @@ export default function CustomPagination({
         size="sm"
         className="cursor-pointer"
         onClick={() => handlePageChange(page + 1)}
-        disabled={!paginationData?.has_next_page || isLoading}
+        disabled={!paginationData?.next_page || isLoading}
       >
         Next
       </Button>

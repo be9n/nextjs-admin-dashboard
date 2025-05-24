@@ -11,11 +11,11 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import Image from "next/image";
-import { type Image as UploadedImage } from "@/app/[locale]/types/global";
+import { type Image as UploadedImage } from "@/types/global";
 import { Separator } from "./ui/separator";
 import { Button } from "./ui/button";
 import { ImagePlus, X } from "lucide-react";
-import authAxios from "@/app/[locale]/lib/authAxios";
+import authAxios from "@/lib/authAxios";
 import { useState, useEffect } from "react";
 import DeleteDialog from "./DeleteDialog";
 import { toast } from "sonner";

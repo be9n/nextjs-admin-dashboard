@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/accordion";
 import { Checkbox } from "@/components/ui/checkbox";
 import SubPermissionGroupNodes from "./SubPermissionGroupNodes";
-import { PermissionNode } from "@/app/[locale]/types/global";
+import { PermissionNode } from "@/types/global";
 
 const MainPermissionGroups = ({
   permissionGroups,

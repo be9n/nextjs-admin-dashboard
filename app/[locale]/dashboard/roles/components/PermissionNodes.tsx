@@ -1,6 +1,6 @@
 "use client"
 
-import { PermissionNode } from "@/app/[locale]/types/global";
+import { PermissionNode } from "@/types/global";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FormControl, FormItem, FormLabel } from "@/components/ui/form";
 import React from "react";

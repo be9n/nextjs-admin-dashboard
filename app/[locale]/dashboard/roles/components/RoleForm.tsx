@@ -21,10 +21,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Loader2Icon } from "lucide-react";
 import { toast } from "sonner";
 import { setFormValidationErrors } from "@/lib/form-utils";
-import { usePermissionSelection } from "../hooks/usePermissionSelection";
-import { createRole, EditRole, updateRole } from "@/app/[locale]/services/roles";
-import { ApiError, PermissionNode } from "@/app/[locale]/types/global";
-import { getPermissionsList } from "@/app/[locale]/services/permissions";
+import { usePermissionSelection } from "../../../../../hooks/usePermissionSelection";
+import { createRole, EditRole, updateRole } from "@/services/roles";
+import { ApiError, PermissionNode } from "@/types/global";
+import { getPermissionsList } from "@/services/permissions";
 
 const formSchema = z.object({
   title: z.string().min(1, { message: "The title is required" }),
