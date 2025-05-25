@@ -5,6 +5,7 @@ import {
   IntBoolean,
   Pagination,
   SuccessApiResponse,
+  QueryParams,
 } from "../types/global";
 import { Category, CategoryListItem, EditCategory } from "../types/categories";
 
@@ -14,10 +15,11 @@ export type PaginatedCategories = {
 };
 
 export const getCategories = async (
-  params?: Record<string, string>
+  params?: QueryParams
 ): Promise<PaginatedCategories | null> => {
-  const queryString = new URLSearchParams(params).toString();
-  const { data: response } = await authAxios.get(`/categories?${queryString}`);
+  const { data: response } = await authAxios.get(`/categories`, {
+    params,
+  });
 
   return response.data.categories;
 };
@@ -37,9 +39,12 @@ export const getCategoriesList = async ({
   parentCategories?: IntBoolean;
   withChildren?: IntBoolean;
 } = {}): Promise<CategoryListItem[] | null> => {
-  const { data: response } = await authAxios.get(
-    `/categories/list?parent=${parentCategories}&with_children=${withChildren}`
-  );
+  const { data: response } = await authAxios.get(`/categories/list`, {
+    params: {
+      parent: parentCategories,
+      with_children: withChildren,
+    },
+  });
 
   return response.data.categories;
 };

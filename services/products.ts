@@ -1,16 +1,8 @@
 import { serialize } from "object-to-formdata";
 import authAxios from "../lib/authAxios";
-import { Image, Pagination, SuccessApiResponse } from "../types/global";
+import { Image, Pagination, SuccessApiResponse, QueryParams } from "../types/global";
 import { routing } from "@/i18n/routing";
 import { ProductFormValues } from "../schemas/productSchema";
-
-type ProductsQueryParams = {
-  search?: string;
-  page?: string;
-  category_id?: string;
-  sort_by?: string;
-  sort_dir?: string;
-};
 
 export type Product = {
   id: number;
@@ -30,10 +22,11 @@ export type LocalizedString = {
 };
 
 export const getProducts = async (
-  params?: ProductsQueryParams,
+  params?: QueryParams
 ): Promise<PaginatedProducts | null> => {
-  const queryString = new URLSearchParams(params).toString();
-  const { data: response } = await authAxios.get(`/products?${queryString}`);
+  const { data: response } = await authAxios.get(`/products`, {
+    params,
+  });
 
   return response.data.products;
 };
