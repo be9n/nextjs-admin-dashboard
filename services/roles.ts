@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { RoleFormValues } from "../app/[locale]/dashboard/roles/components/RoleForm";
 import authAxios from "../lib/authAxios";
-import { ApiError, Pagination, SuccessApiResponse } from "../types/global";
+import { ApiError, Pagination, SuccessApiResponse, QueryParams } from "../types/global";
 import { serialize } from "object-to-formdata";
 
 export type Role = {
@@ -16,10 +16,11 @@ export type PaginatedRoles = {
 };
 
 export const getRoles = async (
-  params?: Record<string, string>
+  params?: QueryParams
 ): Promise<PaginatedRoles | null> => {
-  const queryString = new URLSearchParams(params).toString();
-  const { data: response } = await authAxios.get(`/roles?${queryString}`);
+  const { data: response } = await authAxios.get(`/roles`, {
+    params,
+  });
 
   return response.data.roles;
 };

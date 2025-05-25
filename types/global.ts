@@ -63,3 +63,12 @@ export type Image = {
   name: string;
   url: string;
 };
+
+export type QueryParams = {
+  search?: string;
+  sort_by?: string;
+  sort_dir?: string;
+  page?: string;
+  per_page?: string;
+  [key: string]: string | number | boolean | undefined;
+};
