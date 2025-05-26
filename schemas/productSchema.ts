@@ -2,9 +2,6 @@ import { z } from "zod";
 import { routing } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 
-/**
- * Create the product form schema with dynamic fields for all supported locales
- */
 export function useProductFormSchema(isUpdating = false) {
   const tForm = useTranslations("global.from");
   const tGlobal = useTranslations("global");
@@ -36,14 +33,12 @@ export function useProductFormSchema(isUpdating = false) {
       : z.array(z.instanceof(File)).min(1, {
           message: tGlobal("imagesRequired"),
         }),
+    active: z.boolean(),
   };
 
   return z.object(rules);
 }
 
-/**
- * Type definition for form values
- */
 export type ProductFormValues = z.infer<
   ReturnType<typeof useProductFormSchema>
 >;

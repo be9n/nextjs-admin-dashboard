@@ -1,6 +1,11 @@
 import { serialize } from "object-to-formdata";
 import authAxios from "../lib/authAxios";
-import { Image, Pagination, SuccessApiResponse, QueryParams } from "../types/global";
+import {
+  Image,
+  Pagination,
+  SuccessApiResponse,
+  QueryParams,
+} from "../types/global";
 import { routing } from "@/i18n/routing";
 import { ProductFormValues } from "../schemas/productSchema";
 
@@ -9,6 +14,7 @@ export type Product = {
   name: string;
   price: number;
   category_name: string;
+  active: boolean;
 };
 
 export type PaginatedProducts = {
@@ -38,6 +44,7 @@ export type EditProduct = {
   price: number;
   category_id: number;
   parent_category_id: number;
+  active: boolean;
   images: Image[];
 };
 
@@ -83,6 +90,21 @@ export const deleteProduct = async (
   productId: number
 ): Promise<SuccessApiResponse> => {
   const { data: response } = await authAxios.delete(`/products/${productId}`);
+
+  return response;
+};
+
+export const updateProductActive = async ({
+  productId,
+  active,
+}: {
+  productId: number;
+  active: boolean;
+}): Promise<SuccessApiResponse> => {
+  const { data: response } = await authAxios.post(
+    `/products/${productId}/change_active`,
+    { active }
+  );
 
   return response;
 };

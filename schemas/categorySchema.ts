@@ -5,9 +5,8 @@ import { useTranslations } from "next-intl";
 /**
  * Create the category form schema with dynamic fields for all supported locales
  */
-export function useCategoryFormSchema(isUpdating = false) {
+export function useCategoryFormSchema() {
   const tGlobalForm = useTranslations("global.from");
-  const tCategoriesForm = useTranslations("categories.form");
   const tGlobal = useTranslations("global");
 
   // Create a dynamic name schema object first
@@ -25,14 +24,8 @@ export function useCategoryFormSchema(isUpdating = false) {
   // Then create the complete schema
   return z.object({
     name: z.object(nameFields),
-    parent_id: z
-      .number()
-      .min(1, { message: tCategoriesForm("parentCategoryRequired") }),
-    image: isUpdating
-      ? z.instanceof(File).optional()
-      : z.instanceof(File, {
-          message: tGlobalForm("imageRequired"),
-        }),
+    parent_id: z.number().optional(),
+    image: z.instanceof(File).optional(),
   });
 }
 

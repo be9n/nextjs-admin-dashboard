@@ -40,10 +40,7 @@ import { useTranslations } from "next-intl";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import ProductFormSkeleton from "../../products/components/ProductFormSkeleton";
-import {
-  CategoryListItem,
-  EditCategory,
-} from "@/types/categories";
+import { CategoryListItem, EditCategory } from "@/types/categories";
 import ImageUploader from "@/components/ImageUploader";
 import { useEffect, useState } from "react";
 
@@ -58,7 +55,7 @@ export default function CategoryForm({
 }: CategoryFormProps) {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const categoryFormSchema = useCategoryFormSchema(!!category);
+  const categoryFormSchema = useCategoryFormSchema();
   const tGlobal = useTranslations("global");
   const [activeTab, setActiveTab] = useState<string>("en");
 
@@ -69,7 +66,7 @@ export default function CategoryForm({
         en: category?.name.en ?? "",
         ar: category?.name.ar ?? "",
       },
-      parent_id: category?.parent_id ?? 0,
+      parent_id: category?.parent_id ?? undefined,
       image: undefined,
     },
     mode: "onChange",
@@ -110,7 +107,11 @@ export default function CategoryForm({
         : "Creating category...",
       success: (res: SuccessApiResponse) => {
         queryClient.invalidateQueries({
-          queryKey: ["categories", `category_${category?.id}`],
+          queryKey: ["categories"],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: [`category_${category?.id}`],
         });
 
         router.push("/dashboard/categories");
@@ -244,7 +245,7 @@ const ParentCategories = ({
       name="parent_id"
       render={({ field }) => (
         <FormItem>
-          <FormLabel>Category</FormLabel>
+          <FormLabel>Parent Category</FormLabel>
           <Select
             onValueChange={(value) => {
               if (value) field.onChange(value === "none" ? 0 : Number(value));
