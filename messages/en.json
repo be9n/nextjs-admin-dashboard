@@ -56,6 +56,9 @@
     "ar": "Arabic",
     "en": "English",
     "imagesRequired": "At least one image is required",
+    "active": "Active",
+    "inactive": "Inactive",
+    "status": "Status",
     "from": {
       "translatedNameRequired": "The name in {locale} is required",
       "nameRequired": "The name is required",

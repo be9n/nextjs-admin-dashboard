@@ -15,6 +15,7 @@ import {
   deleteProduct,
   PaginatedProducts,
   Product,
+  updateProductActive,
 } from "@/services/products";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -22,6 +23,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { MUTATION_CACHE_UPDATE_DELAY } from "@/constants/timing";
 import DeleteDialog from "@/components/DeleteDialog";
+import ToggleActive from "@/components/ToggleActive";
 
 // Custom hook to get translated columns
 export function useColumns(
@@ -30,6 +32,8 @@ export function useColumns(
   allProductIds?: number[]
 ) {
   const t = useTranslations("products.columns");
+  const tGlobal = useTranslations("global");
+  const queryClient = useQueryClient();
 
   const columns: TableColumn<Product>[] = [
     {
@@ -88,85 +92,32 @@ export function useColumns(
       cell: (product: Product) => product.category_name,
     },
     {
-      canBeInvisible: false,
-      id: "actions",
-      header: t("actions"),
+      canBeInvisible: true,
+      id: "active",
+      title: tGlobal("active"),
+      header: tGlobal("active"),
       cell: (product: Product) => {
-        return <ActionsMenu product={product} />;
+        return (
+          <ToggleActive
+            defaultChecked={product.active}
+            onChange={async (active: boolean) => {
+              await updateProductActive({
+                productId: product.id,
+                active,
+              });
+
+              queryClient.invalidateQueries({
+                queryKey: ["products"],
+              });
+            }}
+          />
+        );
       },
-    },
-  ];
-
-  return columns;
-}
-
-// For backward compatibility
-export function getColumns(
-  selectedProductIds: number[],
-  setSelectedProductIds: React.Dispatch<React.SetStateAction<number[]>>,
-  allProductIds?: number[]
-) {
-  // Use the useColumns hook instead of this function in components
-  const columns: TableColumn<Product>[] = [
-    {
-      canBeInvisible: false,
-      id: "select",
-      header: (
-        <SelectRow
-          selectAll={true}
-          allRowIds={allProductIds}
-          selectedRowIds={selectedProductIds}
-          setSelectedRowIds={setSelectedProductIds}
-        />
-      ),
-      className: "w-8",
-      cell: (product: Product) => (
-        <SelectRow
-          rowId={product.id}
-          selectedRowIds={selectedProductIds}
-          setSelectedRowIds={setSelectedProductIds}
-        />
-      ),
-    },
-    {
-      id: "id",
-      title: "ID",
-      header: <SortableColumn columnKey="id" title="ID" />,
-      cell: (product: Product) => product.id,
-    },
-    {
-      canBeInvisible: true,
-      id: "name",
-      title: "Name",
-      header: <SortableColumn columnKey="name" title="Name" />,
-      cell: (product: Product) => product.name,
-    },
-    {
-      canBeInvisible: true,
-      id: "price",
-      title: "Price",
-      header: <SortableColumn columnKey="price" title="Price" />,
-      cell: (product: Product) => {
-        const amount = parseFloat(product.price.toString());
-        const formattedPrice = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(amount);
-
-        return formattedPrice;
-      },
-    },
-    {
-      canBeInvisible: true,
-      id: "category_name",
-      title: "Category Name",
-      header: "Category Name",
-      cell: (product: Product) => product.category_name,
     },
     {
       canBeInvisible: false,
       id: "actions",
-      header: "Actions",
+      header: t("actions"),
       cell: (product: Product) => {
         return <ActionsMenu product={product} />;
       },

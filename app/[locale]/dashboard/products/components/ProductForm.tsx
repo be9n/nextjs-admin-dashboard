@@ -3,6 +3,7 @@
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -24,11 +25,7 @@ import { cn } from "@/lib/utils";
 import { ApiError, SuccessApiResponse } from "@/types/global";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import {
-  createProduct,
-  EditProduct,
-  updateProduct,
-} from "@/services/products";
+import { createProduct, EditProduct, updateProduct } from "@/services/products";
 import { toast } from "sonner";
 import { redirect, useRouter } from "next/navigation";
 import ProductFormSkeleton from "./ProductFormSkeleton";
@@ -45,6 +42,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card } from "@/components/ui/card";
 import ImageUploader from "@/components/ImageUploader";
 import { CategoryListItem } from "@/types/categories";
+import { Switch } from "@/components/ui/switch";
 
 type ProductFormProps = {
   product?: EditProduct | null;
@@ -61,6 +59,7 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
     values: {
+      active: product?.active ?? true,
       name: {
         en: product?.name.en ?? "",
         ar: product?.name.ar ?? "",
@@ -99,7 +98,11 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
         : "Creating product...",
       success: (res: SuccessApiResponse) => {
         queryClient.invalidateQueries({
-          queryKey: ["products", `product_${product?.id}`],
+          queryKey: ["products"],
+        });
+
+        queryClient.invalidateQueries({
+          queryKey: [`product_${product?.id}`],
         });
 
         router.push("/dashboard/products");
@@ -227,12 +230,36 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
                 form={form}
                 parent_category_id={product?.parent_category_id}
               />
+
+              <FormField
+                control={form.control}
+                name="active"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                      <div className="space-y-0.5">
+                        <FormLabel>Active</FormLabel>
+                        <FormDescription>
+                          Active products will be visible to customers.
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          className="cursor-pointer"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <FormButtons
               isSubmitting={isSubmitting}
               onCancel={() => redirect("/dashboard/products")}
-              submitDisabled={Object.keys(form.formState.errors).length > 0}
             />
           </Card>
           <ImageUploader<ProductFormValues>
