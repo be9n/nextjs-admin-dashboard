@@ -1,31 +1,12 @@
 import { serialize } from "object-to-formdata";
 import authAxios from "../lib/authAxios";
 import {
-  Image,
-  Pagination,
   SuccessApiResponse,
   QueryParams,
 } from "../types/global";
-import { routing } from "@/i18n/routing";
 import { ProductFormValues } from "../schemas/productSchema";
+import { EditProduct, PaginatedProducts } from "@/types/products";
 
-export type Product = {
-  id: number;
-  name: string;
-  price: number;
-  category_name: string;
-  active: boolean;
-};
-
-export type PaginatedProducts = {
-  data: Product[];
-  pagination: Pagination;
-};
-
-// Create a localized name type based on available locales
-export type LocalizedString = {
-  [key in (typeof routing.locales)[number]]: string;
-};
 
 export const getProducts = async (
   params?: QueryParams
@@ -35,17 +16,6 @@ export const getProducts = async (
   });
 
   return response.data.products;
-};
-
-export type EditProduct = {
-  id: number;
-  name: LocalizedString;
-  description?: LocalizedString;
-  price: number;
-  category_id: number;
-  parent_category_id: number;
-  active: boolean;
-  images: Image[];
 };
 
 export const getProduct = async (

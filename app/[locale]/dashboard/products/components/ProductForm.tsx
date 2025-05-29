@@ -25,7 +25,7 @@ import { cn } from "@/lib/utils";
 import { ApiError, SuccessApiResponse } from "@/types/global";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { createProduct, EditProduct, updateProduct } from "@/services/products";
+import { createProduct, updateProduct } from "@/services/products";
 import { toast } from "sonner";
 import { redirect, useRouter } from "next/navigation";
 import ProductFormSkeleton from "./ProductFormSkeleton";
@@ -43,6 +43,7 @@ import { Card } from "@/components/ui/card";
 import ImageUploader from "@/components/ImageUploader";
 import { CategoryListItem } from "@/types/categories";
 import { Switch } from "@/components/ui/switch";
+import { EditProduct } from "@/types/products";
 
 type ProductFormProps = {
   product?: EditProduct | null;
@@ -212,7 +213,7 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
                     <FormLabel>Price</FormLabel>
                     <FormControl>
                       <Input
-                        type="number"
+                        type="text"
                         value={field.value ?? 0}
                         placeholder="35$"
                         onChange={(e) => {
@@ -236,7 +237,7 @@ export default function ProductForm({ product, isLoading }: ProductFormProps) {
                 name="active"
                 render={({ field }) => (
                   <FormItem>
-                    <div className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                    <div className="flex flex-row items-center justify-between gap-2 rounded-lg border p-3 shadow-sm">
                       <div className="space-y-0.5">
                         <FormLabel>Active</FormLabel>
                         <FormDescription>

@@ -1,5 +1,5 @@
 import { UseFormReturn, FieldValues, Path } from "react-hook-form";
-import { ApiError } from "@/app/types/global";
+import { ApiError } from "@/types/global";
 
 export function setFormValidationErrors<T extends FieldValues>(
   form: UseFormReturn<T>,

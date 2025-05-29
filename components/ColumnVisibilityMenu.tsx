@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { useCallback, useEffect, useState } from "react";
-import { TableColumn } from "@/app/types/global";
+import { TableColumn } from "@/types/global";
 import { Eye, EyeClosed } from "lucide-react";
 
 interface ColumnVisibilityMenuProps<T> {

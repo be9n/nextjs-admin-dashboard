@@ -24,8 +24,10 @@ import {
 import { usePathname } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 import { ChevronRight, Home, LockKeyhole, ShoppingBag } from "lucide-react";
+import { RiDiscountPercentLine  } from "react-icons/ri";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { BiCategory  } from "react-icons/bi";
 
 const items: SidebarItem[] = [
   {
@@ -68,7 +70,7 @@ const items: SidebarItem[] = [
   },
   {
     title: "Categories",
-    icon: ShoppingBag,
+    icon: BiCategory ,
     children: [
       {
         title: "View All",
@@ -78,6 +80,21 @@ const items: SidebarItem[] = [
       {
         title: "Create Category",
         url: "/dashboard/categories/create",
+      },
+    ],
+  },
+  {
+    title: "Discounts",
+    icon: RiDiscountPercentLine ,
+    children: [
+      {
+        title: "View All",
+        url: "/dashboard/discounts",
+        activePatterns: ["^/dashboard/discounts/[^/]+/edit$"],
+      },
+      {
+        title: "Create Discount",
+        url: "/dashboard/discounts/create",
       },
     ],
   },
