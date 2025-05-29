@@ -1,5 +1,7 @@
+import { routing } from "@/i18n/routing";
 import { LucideIcon } from "lucide-react";
 import { ReactNode } from "react";
+import { IconType } from "react-icons/lib";
 
 export type Pagination = {
   current_page: number;
@@ -36,7 +38,7 @@ export type ApiError = {
 export type SidebarItem = {
   title: string;
   url?: string;
-  icon?: LucideIcon;
+  icon?: LucideIcon | IconType;
   children?: SidebarItem[];
   activePatterns?: string[];
   permission?: string;
@@ -71,4 +73,9 @@ export type QueryParams = {
   page?: string;
   per_page?: string;
   [key: string]: string | number | boolean | undefined;
+};
+
+// Create a localized name type based on available locales
+export type LocalizedString = {
+  [key in (typeof routing.locales)[number]]: string;
 };

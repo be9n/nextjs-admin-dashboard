@@ -51,6 +51,26 @@
       "parentCategoryRequired": "The parent category is required"
     }
   },
+  "discounts": {
+    "title": "Discounts",
+    "createDiscount": "Create Discount",
+    "columns": {
+      "id": "ID",
+      "name": "Name",
+      "type": "Type",
+      "value": "Value",
+      "start_date": "Start Date",
+      "end_date": "End Date",
+      "max_uses": "Max Uses",
+      "used_count": "Used Count",
+      "created_at": "Created At"
+    },
+    "menu": {
+      "copyDiscountId": "Copy discount ID",
+      "editDiscount": "Edit Discount",
+      "delete": "Delete"
+    }
+  },
   "global": {
     "searchFor": "Search for {entity}",
     "ar": "Arabic",
@@ -59,6 +79,7 @@
     "active": "Active",
     "inactive": "Inactive",
     "status": "Status",
+    "actions": "Actions",
     "from": {
       "translatedNameRequired": "The name in {locale} is required",
       "nameRequired": "The name is required",

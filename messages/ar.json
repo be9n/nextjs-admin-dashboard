@@ -48,11 +48,34 @@
       "deleteDescription": "هل أنت متأكد أنك تريد حذف هذه الفئة؟"
     }
   },
+  "discounts": {
+    "title": "الخصومات",
+    "createDiscount": "إنشاء خصم جديد",
+    "columns": {
+      "id": "المعرف",
+      "name": "الاسم",
+      "type": "النوع",
+      "value": "القيمة",
+      "start_date": "بدء التاريخ",
+      "end_date": "نهاية التاريخ",
+      "max_uses": "الحد الأقصى للاستخدام",
+      "used_count": "عدد الاستخدامات",
+      "created_at": "إنشاء في"
+    },
+    "menu": {
+      "copyDiscountId": "نسخ معرف الخصم",
+      "editDiscount": "تعديل الخصم",
+      "delete": "حذف"
+    }
+  },
   "global": {
     "searchFor": "ابحث عن {entity}",
     "ar": "العربية",
     "en": "الانجليزية",
     "imagesRequired": "يجب أن يكون على الأقل صورة واحدة",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "actions": "الإجراءات",
     "from": {
       "translatedNameRequired": "الاسم في {locale} مطلوب",
       "nameRequired": "الاسم مطلوب",

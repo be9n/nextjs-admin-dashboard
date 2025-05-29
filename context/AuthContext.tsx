@@ -6,7 +6,11 @@ import { redirect } from "next/navigation";
 import { removeAccessToken, setAccessTokenCookie } from "@/actions/auth";
 import { removePermissions, setPermissions } from "@/actions/permissions";
 import authAxios from "../lib/authAxios";
-import { AuthState, LoginCredentials, RegisterCredentials } from "../types/auth";
+import {
+  AuthState,
+  LoginCredentials,
+  RegisterCredentials,
+} from "../types/auth";
 
 interface AuthContextType extends AuthState {
   login: (credentials: LoginCredentials) => Promise<void>;
