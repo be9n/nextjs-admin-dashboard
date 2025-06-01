@@ -94,7 +94,7 @@ export default function DiscountForm({
     onSuccess: (res: SuccessApiResponse) => handleSuccess(res),
     onError: (error: ApiError) => handleError(error),
   });
-
+  
   const updateDiscountMutation = useMutation({
     mutationFn: updateDiscount,
     onSuccess: (res: SuccessApiResponse) => handleSuccess(res),
@@ -198,12 +198,12 @@ export default function DiscountForm({
           </Tabs>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div className="flex gap-2 items-start">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 items-start">
               <FormField
                 control={form.control}
                 name="type"
                 render={({ field }) => (
-                  <FormItem className="flex-1">
+                  <FormItem>
                     <FormLabel>Type</FormLabel>
                     <Select
                       onValueChange={field.onChange}
@@ -215,7 +215,7 @@ export default function DiscountForm({
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="percentage">Percentage</SelectItem>
+                        <SelectItem value="percentage">Percentagewegwegwe weifw eowefwiefj wefw e wegwe gweg wef wef wef</SelectItem>
                         <SelectItem value="fixed">Fixed</SelectItem>
                       </SelectContent>
                     </Select>
@@ -227,7 +227,7 @@ export default function DiscountForm({
                 control={form.control}
                 name="value"
                 render={({ field }) => (
-                  <FormItem className="flex-1">
+                  <FormItem>
                     <FormLabel>Value</FormLabel>
                     <FormControl>
                       <NumberInput

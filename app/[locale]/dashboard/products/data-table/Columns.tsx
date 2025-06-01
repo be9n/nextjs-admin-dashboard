@@ -11,12 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
-import {
-  deleteProduct,
-  PaginatedProducts,
-  Product,
-  updateProductActive,
-} from "@/services/products";
+import { deleteProduct, updateProductActive } from "@/services/products";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -24,6 +19,7 @@ import { Link } from "@/i18n/navigation";
 import { MUTATION_CACHE_UPDATE_DELAY } from "@/constants/timing";
 import DeleteDialog from "@/components/DeleteDialog";
 import ToggleActive from "@/components/ToggleActive";
+import { PaginatedProducts, Product } from "@/types/products";
 
 // Custom hook to get translated columns
 export function useColumns(
@@ -144,12 +140,6 @@ const ActionsMenu = ({ product }: { product: Product }) => {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuLabel>{t("actions")}</DropdownMenuLabel>
-        <DropdownMenuItem
-          className="cursor-pointer"
-          onClick={() => navigator.clipboard.writeText(product.id.toString())}
-        >
-          {menuT("copyProductId")}
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem className="cursor-pointer" asChild>
           <Link href={`/dashboard/products/${product.id}/edit`}>

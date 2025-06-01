@@ -1,9 +1,6 @@
 import { serialize } from "object-to-formdata";
 import authAxios from "../lib/authAxios";
-import {
-  SuccessApiResponse,
-  QueryParams,
-} from "../types/global";
+import { SuccessApiResponse, QueryParams } from "../types/global";
 import { EditDiscount, PaginatedDiscounts } from "@/types/discounts";
 import { DiscountFormValues } from "@/schemas/discountSchema";
 
