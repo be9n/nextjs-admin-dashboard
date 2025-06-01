@@ -20,10 +20,12 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-gray-100">
       <SidebarProvider>
-        <AppSidebar />
-        <div className="w-full">
-          <Header />
-          <main className="mx-auto">{children}</main>
+        <div className="flex w-full">
+          <AppSidebar />
+          <main className="flex-1 overflow-x-auto">
+            <Header />
+            {children}
+          </main>
         </div>
       </SidebarProvider>
     </div>

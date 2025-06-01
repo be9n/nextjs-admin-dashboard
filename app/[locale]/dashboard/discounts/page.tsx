@@ -39,7 +39,7 @@ export default function DiscountsPage() {
     queryFn: () => getDiscounts(queryParams),
     placeholderData: keepPreviousData,
   });
-  
+
   useErrorNotification({
     isError,
     title: "Something went wrong",
@@ -51,7 +51,9 @@ export default function DiscountsPage() {
       <div className="flex items-center">
         <h2 className="font-bold text-lg md:text-2xl">{t("title")}</h2>
         <Button className="ms-auto" asChild>
-          <Link href={"/dashboard/discounts/create"}>{t("createDiscount")}</Link>
+          <Link href={"/dashboard/discounts/create"}>
+            {t("createDiscount")}
+          </Link>
         </Button>
       </div>
 
